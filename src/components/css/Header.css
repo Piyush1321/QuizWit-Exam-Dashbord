@@ -1,0 +1,28 @@
+.main-header {
+    height: 50px;
+    background: white;
+    /* background: rgba(0, 0, 0, 0.9); */
+    /* background: white; */
+    color: #3a3a3a;
+    /* color: rgb(8, 156, 255); */
+    z-index: 49;
+    border-bottom: 0.5px solid rgba(0, 0, 0, 0.4);
+}
+.main-header > div {
+    height: 100%;
+    padding: 0px 20px;
+}
+.webapp {
+    font-weight: bold;
+    font-size: 17px;
+}
+.userphoto-container {
+    font-size: 30px;
+    position: relative;
+}
+#username {
+    font-size: 14px;
+}
+.main-header .logo {
+    height: 40px;
+}

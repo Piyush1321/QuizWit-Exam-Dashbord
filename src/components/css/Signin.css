@@ -1,0 +1,27 @@
+.signin-cover {
+    background-image: url('../../../public/images/signup-cover.jpeg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.signin-cover > div:nth-child(1) {
+    margin: 0px 20px;
+    color: rgb(233, 233, 233);
+}
+.signin-cover form {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 20px;
+    padding: 20px 30px;
+    margin: 0px 20px;
+    width: 400px;
+}
+
+#signin-form .logo {
+    height: 55px;
+}

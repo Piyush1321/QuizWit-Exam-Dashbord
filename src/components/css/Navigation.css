@@ -1,0 +1,13 @@
+.navigation {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+.navigation .sections {
+    flex: 1;
+    background: white;
+    overflow: auto;
+}
+.navigation h3 {
+    padding: 5px;
+}

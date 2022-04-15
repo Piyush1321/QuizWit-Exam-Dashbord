@@ -1,0 +1,327 @@
+
+/* Input */
+.input-block {
+  display: flex;
+  margin-top: 10px;
+  margin-bottom: 30px;
+}
+.input-block p {
+  font-size: 14px;
+}
+.input-block > div {
+  flex: 1;
+  margin-left: 20px;
+}
+.input-block > div:first-child {
+  margin-left: 0;
+}
+
+/* Customized Radio */
+.customized-radio-sticky {
+  margin-top: -10px;
+  position: relative;
+}
+.customized-radio-sticky > label {
+  position: absolute;
+}
+.customized-radio-sticky > div:nth-child(2) {
+  margin-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+}
+.customized-radio-sticky > div > label {
+  height: 30px;
+  border: 0.5px solid rgba(0, 0, 0, 0.4);
+  border-left: none;
+}
+.customized-radio-sticky > div > label > input {
+  display: none;
+}
+.customized-radio-sticky > div > label > span {
+  display: block;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  padding: 0px 25px;
+}
+.customized-radio-sticky > div > label:first-child {
+  border-left: 0.5px solid rgba(0, 0, 0, 0.4);
+  border-top-left-radius: 3px;
+  border-bottom-left-radius: 3px;
+}
+.customized-radio-sticky > div > label:last-child {
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
+}
+
+.customized-radio-sticky > div > label > input:checked ~ span {
+  border-color: rgb(8, 156, 255);
+  background: rgb(8, 156, 255, 0.2);
+  color: rgb(8, 156, 255);
+  transform: 300ms;
+}
+
+
+/* custom toggle checkbox */
+.customized-checkbox-toggle > label {
+  margin-bottom: 10px;
+  display: block;
+}
+.customized-checkbox-toggle > div {
+  display: flex;
+  flex-direction: column;
+}
+.customized-checkbox-toggle > div > .light {
+  background: white;
+}
+.customized-checkbox-toggle > div > .dark {
+  background: #3e3e3e;
+}
+.customized-checkbox-toggle > div > label  {
+  height: 26px;
+  width: 50px;
+  border-radius: 50px;
+  position: relative;
+  cursor: pointer;
+  border: 2px solid rgba(90, 90, 90, 0.3);
+}
+
+.customized-checkbox-toggle > div > label  input {
+  display: none;
+}
+
+.customized-checkbox-toggle > div > label  > span {
+  transition: 300ms;
+  background: #b1b1b1;
+  height: 21px;
+  width: 21px;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 2px;
+  transform: translate(0, -50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.customized-checkbox-toggle > div > label  > span > i {
+  font-size: 8px;
+  color: #b1b1b1;
+}
+
+.customized-checkbox-toggle > div > label > input:checked ~ span {
+  transition: 300ms;
+  -webkit-transition: .4s;
+  background: rgb(8, 156, 255);
+  position: absolute;
+  top: 50%;
+  transform: translate(25px, -50%) rotate(360deg);
+  height: 21px;
+  width: 21px;
+  transition: 300ms;
+  color: rgb(255, 255, 255);
+}
+.customized-checkbox-toggle > div > label > input:checked ~ span > i {
+  color: white;
+}
+
+.customized-checkbox-toggle > div > label > input:checked ~ span:hover {
+  transition: 300ms;
+  box-shadow: 0px 0px 0px 8px rgb(8, 156, 255, 0.3);
+}
+
+.customized-checkbox-toggle > div > label:hover span {
+  transition: 300ms;
+  box-shadow: 0px 0px 0px 8px rgb(8, 156, 255, 0.3);
+}
+
+/* custom toggle button start */
+
+.custom-toggle-btn {
+  height: 19px;
+  width: 43px;
+  border-radius: 50px;
+  background: #3e3e3e;
+  position: relative;
+  cursor: pointer;
+  border: 2px solid rgba(90, 90, 90, 0.3);
+  display: block;
+}
+
+.custom-toggle-btn input {
+  display: none;
+}
+
+.custom-toggle-btn>span {
+  transition: 300ms;
+  background: white;
+  height: 14px;
+  width: 14px;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 2px;
+  transform: translate(0, -50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.custom-toggle-btn>span>i {
+  font-size: 6px;
+  color: white;
+}
+
+.custom-toggle-btn input:checked~span {
+  transition: 300ms;
+  -webkit-transition: .4s;
+  background: #30af10;
+  position: absolute;
+  top: 50%;
+  transform: translate(25px, -50%) rotate(360deg);
+  height: 14px;
+  width: 14px;
+  transition: 300ms;
+}
+
+.custom-toggle-btn input:checked~span:hover {
+  transition: 300ms;
+  box-shadow: 0px 0px 0px 8px rgba(95, 95, 95, 0.5);
+}
+
+.custom-toggle-btn:hover span {
+  transition: 300ms;
+  box-shadow: 0px 0px 0px 8px rgba(99, 99, 99, 0.5);
+}
+/* custom toggle button end */
+
+/* input-floating */
+.input-floating {
+  background: transparent;
+  position: relative;
+  z-index: 1;
+}
+.input-floating > input,
+.input-floating > textarea,
+.input-floating > select {
+  font-family: "MiSans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans","Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+  border: none;
+  background: transparent;
+  border: 0.5px solid rgba(0, 0, 0, 0.4);
+  font-size: 14px;
+  padding: 10px 10px;
+  width: 100%;
+  box-sizing: border-box;
+  resize: none;
+  border-radius: 5px;
+  padding-top: 20px;
+  /* background: rgb(8, 156, 255, 0.075); */
+}
+.input-floating > label {
+  position: absolute;
+  left: 4px;
+  top: 4px;
+  z-index: -1;
+  font-size: 16px;
+  color: gray;
+  padding: 0px 5px;
+}
+.input-floating > input:focus,
+.input-floating > textarea:focus {
+  outline: none;
+  border-color: rgb(8, 156, 255);
+  transition: 300ms;
+  box-shadow: 0px 0px 0px 3px rgb(8, 156, 255, 0.2);
+}
+.input-floating > input:valid ~ label,
+.input-floating > input:focus ~ label,
+.input-floating > textarea:valid ~ label,
+.input-floating > textarea:focus ~ label {
+  font-size: 13px;
+  top: 5px;
+  left: 6px;
+  z-index: 1;
+  transform: translate(0, 0);
+  transition: 300ms;
+  color: rgb(8, 156, 255);
+  padding: 0px 3px;
+}
+
+.input-floating > select ~ label {
+font-size: 14px;
+top: -15px;
+left: 0;
+z-index: 1;
+transform: translate(0, 0);
+transition: 300ms;
+}
+.input-floating > select:focus ~ label {
+color: rgb(8, 156, 255);
+} 
+
+
+/* input-custom */
+.input-custom {
+    background: transparent;
+    position: relative;
+    z-index: 1;
+  }
+  .input-custom > input,
+  .input-custom > textarea,
+  .input-custom > select {
+    font-family: "MiSans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans","Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+    border: none;
+    background: transparent;
+    border: 0.5px solid rgba(0, 0, 0, 0.4);
+    font-size: 14px;
+    padding: 10px 10px;
+    width: 100%;
+    box-sizing: border-box;
+    resize: none;
+    border-radius: 5px;
+    padding-top: 20px;
+    /* background: rgb(8, 156, 255, 0.075); */
+  }
+  .input-custom > label {
+    position: absolute;
+    left: 4px;
+    top: 4px;
+    z-index: -1;
+    font-size: 14px;
+    color: gray;
+    padding: 0px 5px;
+  }
+  .input-custom > input:focus,
+  .input-custom > textarea:focus {
+    outline: none;
+    border-color: rgb(8, 156, 255);
+    transition: 300ms;
+    box-shadow: 0px 0px 0px 3px rgb(8, 156, 255, 0.2);
+  }
+  .input-custom > input:focus ~ label,
+  .input-custom > textarea:focus ~ label {
+    font-size: 14px;
+    top: 4px;
+    left: 4px;
+    z-index: 1;
+    transform: translate(0, 0);
+    transition: 300ms;
+    color: rgb(8, 156, 255);
+    padding: 0px 5px;
+  }
+  
+  .input-custom > select ~ label {
+  font-size: 14px;
+  top: -15px;
+  left: 0;
+  z-index: 1;
+  transform: translate(0, 0);
+  transition: 300ms;
+  }
+  .input-custom > select:focus ~ label {
+  color: rgb(8, 156, 255);
+  } 
+  
+  
