@@ -63,7 +63,7 @@ class ExamDetails extends React.Component {
                             <div className='flex-row ai-c'>
                                 <div className='flex-row ai-c'>
                                     <div id='candidate-name' className='mr-10'>{this.props.studentDetails.fullName}</div>
-                                    <button className='btn btn-success btn-small ml-10'><i className='fas fa-play mr-5'></i> Start</button>
+                                    <button className='btn btn-success btn-small ml-10' onClick={this.props.startExam}><i className='fas fa-play mr-5'></i> Start</button>
                                     <button className='btn btn-primary btn-small ml-10' onClick={this.props.logout}><i className='fas fa-sign-out-alt mr-5'></i>Logout</button>
                                 </div>
                             </div>

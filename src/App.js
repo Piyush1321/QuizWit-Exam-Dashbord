@@ -9,6 +9,7 @@ import Signin from './components/Signin';
 import Flash from './components/services/Flash';
 import ExamDetails from './components/ExamDetails';
 import Request from './components/services/Request';
+import InvalidURL from './components/InvalidURL';
 
 class App extends React.Component {
 
@@ -20,7 +21,8 @@ class App extends React.Component {
         validURL: false,
         login: false,
         start: false,
-        studentDetails: {}
+        studentDetails: {},
+        error: ''
     }
   }
 
@@ -38,6 +40,11 @@ class App extends React.Component {
     .then((res) => {
       if(res.success) {
         this.loggedIn(res);
+      }
+      else {
+        this.setState({
+          error: res.error
+        })
       }
     })
   }
@@ -71,7 +78,6 @@ class App extends React.Component {
     let pathname = window.location.pathname;
     pathname = pathname.substr(1, pathname.length);
     if(isNaN(pathname)) {
-        Flash.message('Invalid URL', 'bg-danger');
     }
     else {
         pathname = parseInt(pathname);
@@ -128,9 +134,7 @@ class App extends React.Component {
 
         {
           !this.state.validURL &&
-          <div>
-            Invalid URL
-          </div>
+          <InvalidURL error={this.state.error}/>
         }
         
       </div>

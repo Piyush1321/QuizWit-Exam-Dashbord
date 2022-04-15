@@ -1,0 +1,37 @@
+.invalid-url-wrapper {
+    display: flex;
+    height: 100vh;
+    padding: 100px;
+}
+.invalid-url-wrapper > div {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 50px;
+    flex-direction: column;
+    position: relative;
+}
+.invalid-url-wrapper > div:nth-child(2) {
+    border-left: 0.5px solid rgba(0, 0, 0, 0.4);
+}
+.invalid-url-wrapper > div:nth-child(2) i {
+    font-size: 100px;
+}
+.error-404 {
+    display: flex;
+    font-size: 150px;
+    font-weight: 500;
+    position: absolute;
+    left: 50%;
+    top: 70%;
+}
+.error-text {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    color: rgb(227, 80, 80, 0.2);
+    font-size: 250px;
+    font-weight: bold;
+}
