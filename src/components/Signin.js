@@ -38,7 +38,8 @@ class Signin extends React.Component {
         else {
             let log = res.errorLog;
             let icon = '<i class="fas fa-exclamation-circle mr-5"></i>';
-            responseBlock[0].innerHTML = (log.email ? icon + log.email: '');
+            responseBlock[0].innerHTML = (log.examId ? icon + log.examId: '');
+            responseBlock[1].innerHTML = (log.email ? icon + log.email: '');
         }
 
     }
@@ -60,6 +61,7 @@ class Signin extends React.Component {
                     </div>
                     <div className='header primary'>Sign In | Student</div>
                     <input className='hidden' name="examId" defaultValue={this.props.examId}/>
+                    <div className='response'></div>
                     <div className='input-block ai-c'>
                         <div className='input-floating'>
                             <input id='admin-email' type='text' name='email' required/>

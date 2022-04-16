@@ -18,9 +18,11 @@ class App extends React.Component {
 
     this.state = {
         examId: 0,
+        examTitle: null,
         validURL: false,
         login: false,
         start: false,
+        entireExamTimeDuration: null,
         studentDetails: {},
         error: ''
     }
@@ -68,8 +70,22 @@ class App extends React.Component {
 
 
   startExam = () => {
-    this.setState({
-      start: true
+    let url = "http://localhost:8080/QuizWit/StartExam";
+    Request.get(url)
+    .then((res) => {
+      console.log('Start Exam --------------------->')
+      console.log(res);
+        if(res.success) {
+          this.setState({
+            start: true,
+            entireExamTimeDuration: res.entireExamTimeDuration,
+            examTitle: res.examTitle
+          })
+          Flash.message(res.success, 'bg-success');
+        }
+        else {
+            Flash.message(res.error, 'bg-danger');
+        }
     })
   }
 
@@ -103,7 +119,10 @@ class App extends React.Component {
                     {
                       this.state.start && 
                       <>
-                        <Header />
+                        <Header  
+                          duration={this.state.entireExamTimeDuration}
+                          examTitle={this.state.examTitle}
+                        />
                         <div className='body-wrapper'>
                             <div className='navigation-wrapper'>
                                 <Navigation />

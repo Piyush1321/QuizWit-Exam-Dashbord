@@ -1,12 +1,19 @@
 import React from 'react';
 import '../css/Section.css';
+import Timer from '../services/Timer';
 import QuestionNavigate from '../util/QuestionNavigate';
 
 class Section extends React.Component {
   
     constructor(props) {
         super(props);
+        this.state = {
+            questions: this.props.questions
+        }
+    }
 
+    submitSection = () => {
+        console.log('submit-section');
     }
 
     componentDidMount = () => {
@@ -27,6 +34,10 @@ class Section extends React.Component {
                 toggleDown.style.display = 'none';
             });
         }
+
+        const timer = new Timer();
+        timer.set(this.props.duration, 'section-timer' + this.props.sectionId, this.submitSection);
+        timer.start();
     }
 
     render = () => {
@@ -35,10 +46,14 @@ class Section extends React.Component {
                 <div className='section'>
                     <div className='info'>
                         <div className='name-timer'>
-                            <div>
-                                Section Name
+                            <div className='secondary'>
+                                {this.props.title}
                             </div>
-                            <div>Timer</div>
+                            <div>
+                                <div className='timer'>
+                                    <div id={'section-timer' + this.props.sectionId}></div>
+                                </div>
+                            </div>
                         </div>
                         <div className='toggle toggle-down'>
                             <i className='fas fa-angle-down'></i>
@@ -48,15 +63,13 @@ class Section extends React.Component {
                         </div>
                     </div>
                     <div className='questions'>
-                        <QuestionNavigate />
-                        <QuestionNavigate />
-                        <QuestionNavigate />
-                        <QuestionNavigate />
-                        <QuestionNavigate />
-                        <QuestionNavigate />
-                        <QuestionNavigate />
-                        <QuestionNavigate />
-                        <QuestionNavigate />
+                        {
+                            this.state.questions.map((d, k) => {
+                                return <QuestionNavigate 
+                                    question={d}
+                                />
+                            })
+                        }
                     </div>
                 </div>
             </>

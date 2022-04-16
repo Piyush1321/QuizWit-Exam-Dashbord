@@ -71,7 +71,7 @@ class ExamDetails extends React.Component {
                     </div>
                     <div className='exam-details-wrapper'>
                         <div className='flex-row'>
-                            <div className='block-wrapper'>
+                            <div className='block-wrapper flex-full'>
                                 <div className='block'>
                                     <div>Exam</div>
                                     <div>{this.state.exam.title}</div>

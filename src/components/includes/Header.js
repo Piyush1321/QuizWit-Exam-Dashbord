@@ -7,7 +7,7 @@ class Header extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            entireExamTime: 3600
+            entireExamTime: this.props.duration
         }
     }
 
@@ -29,14 +29,12 @@ class Header extends React.Component {
                         <a href='http://localhost:3000'>
                             <img src='images/logo/logo.png' className='logo' />
                         </a>
-                        <div className='ml-10'>Exam Name</div>
+                        <div className='ml-10'>{this.props.examTitle}</div>
                     </div>
                     <div className='flex-row ai-c'>
                         <div className='flex-row ai-c'>
                             <div id='candidate-name' className='mr-10'>Ishwar Baisla</div>
-                            <div id='entire-exam-timer'>
-                                <div id='entire-exam-timer-block'></div>
-                            </div>
+                            <div id='entire-exam-timer-block' className='timer'></div>
                             <button className='btn btn-danger btn-small ml-10'>End Exam</button>
                         </div>
                     </div>

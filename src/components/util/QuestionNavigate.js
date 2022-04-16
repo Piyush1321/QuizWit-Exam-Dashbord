@@ -19,13 +19,20 @@ class QuestionNavigate extends React.Component {
                     <input type="radio" name="questionNavigate" />
                     <span>
                         <div>
-                            <img style={{width: "20px"}} src='images/assets/directory.png' />
-                        </div>
-                        <div>
-                            1
-                        </div>
-                        <div>
-                            Who is pm of India...
+                            <div className='flex-row'>
+                                <div className='serial-no'>
+                                    {this.props.question.serialNo}
+                                </div>
+                                <div className='question-value'>
+                                    {this.props.question.question}
+                                </div>
+                            </div>
+                            <div className='flex-row'>
+                                <div className='serial-no'>
+                                </div>
+                                <div className='flex-full'>score: {this.props.question.score}</div>
+                                <div className='flex-full'>Negative: {this.props.question.negative}</div>
+                            </div>
                         </div>
                     </span>
                 </label>

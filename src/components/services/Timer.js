@@ -51,14 +51,14 @@ class Timer {
             return;
         let timerblock = this.element;
         timerblock.innerHTML = this.format();
-        timerblock.style.display = 'block';
+        timerblock.style.display = 'flex';
 
         if (this.time <= 59) {
             timerblock.style.color = 'red';
         }
     
         if (this.time <= 0) {
-            timerblock.innerHTML = 'Time end!';
+            timerblock.remove();
             this.callback();
             this.stop();
         }
@@ -75,10 +75,10 @@ class Timer {
             return;
         let timerblock = this.element;
         timerblock.innerHTML = this.format();
-        timerblock.style.display = 'block';
+        timerblock.style.display = 'flex';
     
         if(this.countUpLimit <= this.time) {
-            timerblock.innerHTML = 'Time end!';
+            timerblock.remove();
             this.callback();
             this.stop();
         }

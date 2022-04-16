@@ -646,6 +646,17 @@ input::-webkit-inner-spin-button {
   justify-content: center;
   align-items: center;
 }
+.timer {
+  background: rgb(70, 162, 227, 0.2);
+  border-radius: 5px;
+  color: rgb(70 162 227);
+  font-weight: 500;
+  width: 80px;
+  height: 28px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 #entire-exam-timer > div {
   font-weight: 4;
 }
@@ -659,5 +670,4 @@ input::-webkit-inner-spin-button {
 }
 .content-wrapper {
   flex: 1;
-  background: green;
 }
