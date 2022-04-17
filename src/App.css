@@ -387,6 +387,7 @@ form .footer {
 .body-wrapper {
   display: flex;
   flex: 1;
+  position: relative;
 }
 .main-wrapper {
   display: flex;
@@ -425,17 +426,18 @@ form .footer {
   display: flex;
   flex: 1;
   overflow: auto;
-  border-bottom-left-radius: 10px;
+  flex-direction: column;
 }
 .content-loaded ul {
   list-style: decimal;
   margin-left: 20px;
 }
 .content-loaded > div {
-  flex: 1;
-  height: 1px;
+}
+.content-loaded .btn-container {
+  background: white;
   padding: 10px;
-  padding-top: 5px;
+  border-top: 0.5px solid rgba(0, 0, 0, 0.3);
 }
 .loader-container {
   position: absolute;
@@ -670,4 +672,25 @@ input::-webkit-inner-spin-button {
 }
 .content-wrapper {
   flex: 1;
+  position: relative;
+}
+.card-container > div {
+  display: flex;
+}
+.card-container > div > div {
+  flex: 1;
+  background: white;
+  height: 70px;
+  border-radius: 10px;
+  margin: 0px 7px;
+}
+
+.card-container > div > div:first-child {
+  margin-left: 0px;
+}
+.card-container > div > div:last-child {
+  margin-right: 0px;
+}
+.question-loader-wrapper {
+  background: white;
 }

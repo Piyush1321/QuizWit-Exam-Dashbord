@@ -1,6 +1,8 @@
 import React from 'react';
 import '../css/Header.css';
 import Timer from '../services/Timer';
+import Request from '../services/Request';
+import Flash from '../services/Flash';
 
 class Header extends React.Component {
   
@@ -11,14 +13,13 @@ class Header extends React.Component {
         }
     }
 
-    endExam = () => {
-        console.log('Exam Ended');
-    }
-
     componentDidMount = () => {
-        const timer = new Timer();
-        timer.set(this.state.entireExamTime, 'entire-exam-timer-block', this.endExam);
-        timer.start();
+        if(this.props.setExamTimer) {
+            document.getElementById('entire-exam-timer-block').className = 'timer';
+            const timer = new Timer();
+            timer.set(this.state.entireExamTime, 'entire-exam-timer-block', this.props.endExam);
+            timer.start();
+        }
     }
 
     render = () => {
@@ -34,8 +35,8 @@ class Header extends React.Component {
                     <div className='flex-row ai-c'>
                         <div className='flex-row ai-c'>
                             <div id='candidate-name' className='mr-10'>Ishwar Baisla</div>
-                            <div id='entire-exam-timer-block' className='timer'></div>
-                            <button className='btn btn-danger btn-small ml-10'>End Exam</button>
+                            <div id='entire-exam-timer-block'></div>
+                            <button className='btn btn-danger btn-small ml-10' onClick={this.props.showEndExamDialog}>End Exam</button>
                         </div>
                     </div>
                 </div>

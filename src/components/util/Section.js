@@ -37,6 +37,7 @@ class Section extends React.Component {
 
         const timer = new Timer();
         timer.set(this.props.duration, 'section-timer' + this.props.sectionId, this.submitSection);
+        timer.setRemove();
         timer.start();
     }
 
@@ -50,7 +51,7 @@ class Section extends React.Component {
                                 {this.props.title}
                             </div>
                             <div>
-                                <div className='timer'>
+                                <div>
                                     <div id={'section-timer' + this.props.sectionId}></div>
                                 </div>
                             </div>

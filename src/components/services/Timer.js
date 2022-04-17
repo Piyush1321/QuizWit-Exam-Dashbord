@@ -1,15 +1,30 @@
+import TimeToString from "./TimeToString";
+
 class Timer {
     constructor() {
         this.time = 0;
         this.element = null;
         this.control = true;
         this.callback = null;
+        this.label = false;
+        this.message = '';
+        this.remove = false;
     }
     set(time, id, callback) {
         this.time = time;
         this.element = document.getElementById(id);
         this.callback = callback;
     }
+    setRemove() {
+        this.remove = true;
+    }
+    setMessage(msg) {
+        this.message = msg;
+    }
+    labelView() {
+        this.label = true;
+    }
+
     start(type = 'COUNT_DOWN') {
         this.control = true;
 
@@ -50,15 +65,19 @@ class Timer {
         if(!this.control)
             return;
         let timerblock = this.element;
-        timerblock.innerHTML = this.format();
+        if(this.label)
+            timerblock.innerHTML = (new TimeToString(this.time).convert());
+        else timerblock.innerHTML = this.format();
         timerblock.style.display = 'flex';
 
         if (this.time <= 59) {
-            timerblock.style.color = 'red';
+            timerblock.style.color = 'rgb(227 80 80)';
         }
     
         if (this.time <= 0) {
-            timerblock.remove();
+            if(this.remove)
+                timerblock.remove();
+            else timerblock.innerHTML = this.message;
             this.callback();
             this.stop();
         }
@@ -74,11 +93,15 @@ class Timer {
         if(!this.control)
             return;
         let timerblock = this.element;
-        timerblock.innerHTML = this.format();
+        if(this.label)
+            timerblock.innerHTML = (new TimeToString(this.time).convert());
+        else timerblock.innerHTML = this.format();
         timerblock.style.display = 'flex';
     
         if(this.countUpLimit <= this.time) {
-            timerblock.remove();
+            if(this.remove)
+                timerblock.remove();
+            else timerblock.innerHTML = this.message;
             this.callback();
             this.stop();
         }

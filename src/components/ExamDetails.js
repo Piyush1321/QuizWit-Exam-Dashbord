@@ -7,6 +7,7 @@ import Flash from './services/Flash';
 import './css/ExamDetails.css';
 import TimeToString from './services/TimeToString';
 import DateTime from './services/DateTime';
+import Timer from './services/Timer';
 
 class ExamDetails extends React.Component {
     constructor(props) {
@@ -37,6 +38,13 @@ class ExamDetails extends React.Component {
                 this.setState({
                     exam: res.exam,
                     sections: sectionDetails
+                }, () => {
+
+                    const timer = new Timer();
+                    timer.set(this.state.exam.timeToStart, 'time-to-start', this.startExam);
+                    timer.labelView();
+                    timer.setMessage('<i class="fas fa-exclamation-circle mr-5"></i>Exam started')
+                    timer.start();
                 })
             }
             else {
@@ -45,7 +53,13 @@ class ExamDetails extends React.Component {
         })
     }
 
+    startExam = () => {
+        document.getElementById('start-exam-btn').style.display = 'block';
+        document.getElementById('starts-in').style.display = 'none';
+    }
+
     componentDidMount = () => {
+        document.getElementById('start-exam-btn').style.display = 'none';
         this.fetchExamDetails();
     }
 
@@ -63,7 +77,7 @@ class ExamDetails extends React.Component {
                             <div className='flex-row ai-c'>
                                 <div className='flex-row ai-c'>
                                     <div id='candidate-name' className='mr-10'>{this.props.studentDetails.fullName}</div>
-                                    <button className='btn btn-success btn-small ml-10' onClick={this.props.startExam}><i className='fas fa-play mr-5'></i> Start</button>
+                                    <button id='start-exam-btn' className='btn btn-success btn-small ml-10' onClick={this.props.startExam}><i className='fas fa-play mr-5'></i> Start</button>
                                     <button className='btn btn-primary btn-small ml-10' onClick={this.props.logout}><i className='fas fa-sign-out-alt mr-5'></i>Logout</button>
                                 </div>
                             </div>
@@ -109,6 +123,20 @@ class ExamDetails extends React.Component {
                                 <div className='block'>
                                     <div>Window Time</div>
                                     <div>{this.state.exam.windowTime}</div>
+                                </div>
+                                <div className='block'>
+                                    <div>Status</div>
+                                    {
+                                        this.state.exam.examSubmitted &&
+                                        <span className='danger' style={{fontWeight: "5"}}>You have already attempted the exam</span>
+                                    }
+                                    {
+                                        !this.state.exam.examSubmitted &&
+                                        <div className='flex-col'>
+                                            <div id='starts-in'>Starts In</div>
+                                            <div id='time-to-start' className='success flex-row ai-c' style={{fontWeight: "5"}}></div>
+                                        </div>
+                                    }
                                 </div>
                             </div>
                         </div>

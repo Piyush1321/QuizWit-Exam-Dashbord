@@ -28,7 +28,7 @@ class InvalidURL extends React.Component {
                         <h1 className='mt-20'>Invalid URL</h1>
                         <div className='error mt-10'>The page you are looking for doesn't exist.</div>
                         <div className='mt-10'>Please check URL</div>
-                        <div className='mt-10'>If the problem persist write your query here. <a href='' style={{textDecoration: "underline"}}>Contact Us</a></div>
+                        <div className='mt-10'>If the problem persist write your query here. <a href='http://localhost:3000/contact-us' style={{textDecoration: "underline"}}>Contact Us</a></div>
                     </div>
                 </div>
 
