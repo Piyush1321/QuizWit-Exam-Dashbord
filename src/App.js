@@ -20,6 +20,7 @@ class App extends React.Component {
     super(props);
 
     this.state = {
+        examTitleToShowOnLogin: '',
         examId: 0,
         examTitle: null,
         validURL: false,
@@ -222,6 +223,22 @@ class App extends React.Component {
     this.setState({
         examId: obj.examId,
         validURL: obj.valid
+    }, () => {
+      let url = "http://localhost:8080/QuizWit/FetchExamTitle?examId=";
+      url += this.state.examId;
+      Request.get(url)
+      .then((res) => {
+        if(res.success) {
+          this.setState({
+            examTitleToShowOnLogin: res.examTitle
+          })
+        }
+        else {
+          this.setState({
+            validURL: false
+          })
+        }
+      })
     });
   }
 
@@ -251,15 +268,24 @@ class App extends React.Component {
                             <div className='navigation-wrapper'>
                                 <Navigation />
                             </div>
-                            <div className='content-wrapper'>
+                            <div className='content-wrapper m-10'>
                                 <div className='content-loaded' style={{height: "100%"}}>
-                                    <div className='flex-row mt-10'>
-                                        <div className='dashboard-card-container pt-10'>
-                                            <DashboardCard title="Active Exams" value="3" icon="fas fa-check" color="linear-gradient(45deg, rgb(102, 144, 105), rgb(88 180 95))" />
-                                            <DashboardCard title="Scheduled Exams" value="4" icon="fas fa-calendar" color="linear-gradient(45deg, rgb(195, 83, 126),rgb(226 54 120))"/>
-                                            <DashboardCard title="Management Users" value="5" icon="fas fa-users-cog" color="linear-gradient(45deg,rgb(91, 138, 170), rgb(63 155 218))" />
-                                            <DashboardCard title="Attempts" value="257" icon="fas fa-users" color="linear-gradient(45deg, rgb(184, 102, 102), rgb(230 76 76))" /> 
+                                    <div className='flex-row'>
+                                        <div className='dashboard-card-container'>
+                                            <DashboardCard title="Total Questions" value="5" icon="fas fa-users-cog" color="linear-gradient(45deg,rgb(91, 138, 170), rgb(63 155 218))" />
+                                            <DashboardCard title="Attempted" value="3" icon="fas fa-check" color="linear-gradient(45deg, rgb(102, 144, 105), rgb(88 180 95))" />
+                                            <DashboardCard title="Marked as Review" value="4" icon="fas fa-calendar" color="linear-gradient(45deg, rgb(195, 83, 126),rgb(226 54 120))"/>
+                                            <DashboardCard title="Unattempted" value="257" icon="fas fa-users" color="linear-gradient(45deg, rgb(184, 102, 102), rgb(230 76 76))" /> 
                                         </div>
+                                    </div>
+                                    <div className='question-header'>
+                                      <div>Question</div>
+                                      <div>
+                                        {
+                                          this.state.setQuestionTimer &&
+                                          <div id='question-timer' className='timer'></div>
+                                        }
+                                      </div>
                                     </div>
                                     <div className='flex-col flex-full question-loader-wrapper' style={{overflow: "auto"}}>
                                       <div className='p-10 question-loader' style={{height: "100px"}}>
@@ -267,26 +293,6 @@ class App extends React.Component {
                                         <div>{this.state.data.question.score}</div>
                                         <div>{this.state.data.question.negative}</div>
                                         <div>{this.state.data.question.timeDuration}</div>
-                                        <div id='question-timer'></div>
-                                        <div style={{height: "50px", background: "blue", margin: "10px"}}></div>
-                                        <div style={{height: "50px", background: "blue", margin: "10px"}}></div>
-                                        <div style={{height: "50px", background: "blue", margin: "10px"}}></div>
-                                        <div style={{height: "50px", background: "blue", margin: "10px"}}></div>
-                                        <div style={{height: "50px", background: "blue", margin: "10px"}}></div>
-                                        <div style={{height: "50px", background: "blue", margin: "10px"}}></div>
-                                        <div style={{height: "50px", background: "blue", margin: "10px"}}></div>
-                                        <div style={{height: "50px", background: "blue", margin: "10px"}}></div>
-                                        <div style={{height: "50px", background: "blue", margin: "10px"}}></div>
-                                        <div style={{height: "50px", background: "blue", margin: "10px"}}></div>
-                                        <div style={{height: "50px", background: "blue", margin: "10px"}}></div>
-                                        <div style={{height: "50px", background: "blue", margin: "10px"}}></div>
-                                        <div style={{height: "50px", background: "blue", margin: "10px"}}></div>
-                                        <div style={{height: "50px", background: "blue", margin: "10px"}}></div>
-                                        <div style={{height: "50px", background: "blue", margin: "10px"}}></div>
-                                        <div style={{height: "50px", background: "blue", margin: "10px"}}></div>
-                                        <div style={{height: "50px", background: "blue", margin: "10px"}}></div>
-                                        <div style={{height: "50px", background: "blue", margin: "10px"}}></div>
-                                        <div style={{height: "50px", background: "blue", margin: "10px"}}></div>
                                       </div>
                                     </div>
                                     <div className='btn-container flex-row jc-sb'>
@@ -301,6 +307,10 @@ class App extends React.Component {
                                       {
                                         this.state.data.lastQuestion &&
                                         <button className='btn btn-danger btn-medium' onClick={this.showEndExamDialog}>End Exam</button>
+                                      }
+                                      {
+                                        this.state.data.lastQuestionOfSection && !this.state.data.lastQuestion &&
+                                        <button className='btn btn-secondary btn-medium' onClick={this.nextQuestion}>Submit Section &#38; Next</button>
                                       }
                                       {
                                         !this.state.data.lastQuestion && !this.state.data.lastQuestionOfSection &&
@@ -328,7 +338,11 @@ class App extends React.Component {
                 }
                 {
                   !this.state.login &&
-                  <Signin examId={this.state.examId} loggedIn={this.loggedIn}/>
+                  <Signin 
+                    examId={this.state.examId} 
+                    loggedIn={this.loggedIn}
+                    examTitle={this.state.examTitleToShowOnLogin}
+                  />
                 }
               </>
               }

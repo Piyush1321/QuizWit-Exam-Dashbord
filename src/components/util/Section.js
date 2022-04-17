@@ -21,6 +21,9 @@ class Section extends React.Component {
         let sections = document.getElementsByClassName('section');
         let questions = document.getElementsByClassName('questions');
         for(let i=0; i<sections.length; i++) {
+            if(i == 0) {
+                questions[i].style.display = 'block';
+            }
             let toggleUp = sections[i].getElementsByClassName('toggle-up')[0];
             let toggleDown = sections[i].getElementsByClassName('toggle-down')[0];
             toggleUp.addEventListener('click', () => {

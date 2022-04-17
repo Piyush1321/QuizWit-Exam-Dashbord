@@ -49,7 +49,16 @@ class Signin extends React.Component {
             <div className='signin-cover cover flex-row'>
                 <div className='flex-full flex-col jc-c ai-e'>
                     <div>
-
+                        <h2 className='mb-20'>Exam Dashboard</h2>
+                        <p>
+                            See preview of dashboard before you appear for the exam.
+                            <br />
+                            <br />
+                            <Link to='' className='cover-btn'>Dashboard</Link>
+                        </p>
+                        <br />
+                        <br />
+                        <br />
                     </div>
                 </div>
                 <div className='flex-full flex-col jc-c ai-s'>
@@ -59,7 +68,11 @@ class Signin extends React.Component {
                             <img src='images/logo/logo.png' className='logo' alt='logo' />
                         </a>
                     </div>
-                    <div className='header primary'>Sign In | Student</div>
+                    <div className='header primary'>Sign In | Exam</div>
+                    <div className='exam-name-login'>
+                        <span>Exam</span>
+                        <div className='secondary' style={{fontWeight: "5"}}>{this.props.examTitle}</div>
+                    </div>
                     <input className='hidden' name="examId" defaultValue={this.props.examId}/>
                     <div className='response'></div>
                     <div className='input-block ai-c'>

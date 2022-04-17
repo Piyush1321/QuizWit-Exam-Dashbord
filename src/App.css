@@ -666,13 +666,17 @@ input::-webkit-inner-spin-button {
 /* main settings */
 .navigation-wrapper {
     width: 300px;
-    height: 100%;
     background: white;
     display: flex;
+    border-radius: 10px;
+    margin: 10px;
+    margin-right: 0;
 }
 .content-wrapper {
   flex: 1;
   position: relative;
+  margin: 10px;
+  border-radius: 10px;
 }
 .card-container > div {
   display: flex;
@@ -693,4 +697,33 @@ input::-webkit-inner-spin-button {
 }
 .question-loader-wrapper {
   background: white;
+}
+.question-header {
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  background: white;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  align-items: center;
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.3);
+}
+.content-wrapper .btn-container {
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+
+.exam-name-login {    
+  font-weight: 5;
+  background: rgb(227, 132, 74, 0.2);
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  border: 0.5px solid;
+  border-color: rgb(227 132 74);
+  position: relative;
+  font-size: 14px;
+}
+.exam-name-login > span {
+  color: gray;
 }

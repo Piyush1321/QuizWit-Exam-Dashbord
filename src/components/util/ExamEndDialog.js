@@ -31,7 +31,7 @@ class ExamEndDialog extends React.Component {
                         </div>
                         <div className='btn-container flex-row jc-sb'>
                             <button className='btn btn-fade btn-small' onClick={this.closeDialog}>Cancel</button>
-                            <button className='btn btn-danger btn-small' onClick={this.props.endExamViaDialog}>Submit</button>
+                            <button className='btn btn-danger btn-small' onClick={this.props.endExam}>Submit</button>
                         </div>
                     </div>
                 </div>

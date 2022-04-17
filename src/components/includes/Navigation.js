@@ -41,8 +41,8 @@ class Header extends React.Component {
     }
 
     componentDidMount = () => {
-        let height = document.getElementsByTagName('body')[0].offsetHeight - 44 - 32;
-        document.getElementById('entity-holder').style.height = height + 'px';
+        // let height = document.getElementsByTagName('body')[0].offsetHeight - 44 - 32;
+        // document.getElementById('entity-holder').style.height = height + 'px';
         this.fetchNavigationDetails();
     }
 
