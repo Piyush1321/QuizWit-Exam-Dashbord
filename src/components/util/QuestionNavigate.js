@@ -35,6 +35,7 @@ class QuestionNavigate extends React.Component {
                             </div>
                         </div>
                     </span>
+                    <div className='question-navigate-clickable' id={this.props.question.navigationId} onClick={this.props.navigateToParticularQuestion}></div>
                 </label>
             </>
         )

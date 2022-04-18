@@ -13,6 +13,10 @@ import InvalidURL from './components/InvalidURL';
 import ExamEndDialog from './components/util/ExamEndDialog';
 import DashboardCard from './components/util/DashboardCard';
 import Timer from './components/services/Timer';
+import Loader from './components/util/Loader';
+import SubmitSectionDialog from './components/util/SubmitSectionDialog';
+import SubmitQuestionDialog from './components/util/SubmitQuestionDialog';
+import Question from './components/util/Question';
 
 class App extends React.Component {
 
@@ -34,7 +38,11 @@ class App extends React.Component {
         error: '',
         data: {},
         fetchQuestionId: 0,
-        questionNavigation: false
+        questionNavigation: false,
+        sectionNavigation: false,
+        currentQuestionNavigationId: 0,
+        questionTimer: null,
+        questionLoaded: true
     }
   }
 
@@ -87,13 +95,53 @@ class App extends React.Component {
   }
 
   nextQuestion = () => {
-    this.state.fetchQuestionId = this.state.data.nextQuestionToFetch;
-    this.fetchQuestion();
+    this.setState({
+      questionLoaded: false
+    }, () => {
+      this.state.fetchQuestionId = this.state.data.nextQuestionToFetch;
+      this.saveResponse();
+    });
   }
 
   previousQuestion = () => {
-    this.state.fetchQuestionId = this.state.data.previousQuestionToFetch;
-    this.fetchQuestion();
+    this.setState({
+      questionLoaded: false
+    }, () => {
+      this.state.fetchQuestionId = this.state.data.previousQuestionToFetch;
+      this.saveResponse();
+    });
+  }
+
+  saveResponse = () => {
+    let url = "http://localhost:8080/QuizWit/SaveResponse";
+
+    let data = {
+      saveResponseQuestionNavigationId: this.state.currentQuestionNavigationId
+    };
+
+    Request.post(url, data)
+    .then((res) => {
+      if(res.success)
+        this.fetchQuestion();
+    });
+  }
+
+  navigateToParticularQuestion = (e) => {
+    let el = e.target;
+    let id = el.id;
+    try {
+      id = parseInt(id);
+      if(this.state.fetchQuestionId != id) {
+        this.setState({
+          fetchQuestionId: id,
+          questionLoaded: false
+        }, () => {
+          this.fetchQuestion();
+        });
+      }
+    } catch(e) {
+      Flash.message(e, 'bg-danger');
+    }
   }
 
   fetchQuestion = () => {
@@ -102,14 +150,27 @@ class App extends React.Component {
       url += this.state.fetchQuestionId;
       Request.get(url)
       .then((res) => {
+        console.log('Fetch Question called');
         console.log(res);
           if(res.success) {
-            this.setState({
-              data: res.data,
-              setQuestionTimer: res.data.question.setQuestionTimer
-            }, () => {
-              this.renderQuestion();
-            })
+            if(!res.data.error) {
+              this.setState({
+                data: res.data,
+                setQuestionTimer: res.data.question.setQuestionTimer,
+                questionNavigation: res.data.questionNavigation,
+                sectionNavigation: res.data.sectionNavigation,
+                currentQuestionNavigationId: res.data.question.navigationId
+              }, () => {
+                this.renderQuestion();
+              })
+            }
+            else {
+              this.setState({
+                questionLoaded: true
+              }, () => {
+                Flash.message(res.data.error, 'bg-danger');
+              });
+            }
             // Flash.message(res.success, 'bg-success');
           }
           else {
@@ -120,22 +181,32 @@ class App extends React.Component {
   }
 
   renderQuestion = () => {
+    if(this.state.questionTimer) {
+      this.state.questionTimer.stop();
+    }
     if(this.state.setQuestionTimer) {
-      const timer = new Timer();
+      this.state.questionTimer = new Timer();
       if(this.state.data.lastQuestion) {
         console.log('EXAM SUBMIT Timer set');
-        timer.set(this.state.data.timeDuration, 'question-timer', this.endExam);
+        this.state.questionTimer.set(this.state.data.timeDuration, 'question-timer', this.endExam);
       }
-      else if(this.state.data.lastQuestionOfSection) {
+      else if(this.state.data.lastQuestionOfSection && !this.state.sectionNavigation) {
         console.log('SECTION SUBMIT Timer set');
-        timer.set(this.state.data.timeDuration, 'question-timer', this.submitSection);
+        this.state.questionTimer.set(this.state.data.timeDuration, 'question-timer', this.submitSection);
       }
       else {
         console.log('NEXT QUESTION Timer set');
-        timer.set(this.state.data.timeDuration, 'question-timer', this.nextQuestion);
+        this.state.questionTimer.set(this.state.data.timeDuration, 'question-timer', this.nextQuestion);
       }
-      timer.start();
+      this.state.questionTimer.start();
     }
+
+    this.setState({
+      questionLoaded: true
+    }, () => {
+      this.hideSubmitSectionDialog();
+      this.hideSubmitQuestionDialog();
+    })
   }
 
   startExam = () => {
@@ -152,7 +223,9 @@ class App extends React.Component {
             setExamTimer: res.setExamTimer,
             data: res.data,
             setQuestionTimer: res.data.question.setQuestionTimer,
-            questionNavigation: res.data.questionNavigation
+            questionNavigation: res.data.questionNavigation,
+            sectionNavigation: res.data.sectionNavigation,
+            currentQuestionNavigationId: res.data.question.navigationId
           }, () => {
             this.renderQuestion();
           })
@@ -191,7 +264,20 @@ class App extends React.Component {
   }
 
   submitSection = () => {
-    console.log('submit section')
+    let url = "http://localhost:8080/QuizWit/SubmitSection";
+
+    let data = {
+      saveResponseQuestionNavigationId: this.state.currentQuestionNavigationId
+    };
+
+    Request.post(url, data)
+    .then((res) => {
+      console.log('Section Submitted');
+      console.log(res);
+      if(res.success) {
+        this.nextQuestion();
+      }
+    });
   }
 
   checkIfURLIsValid = () => {
@@ -215,6 +301,26 @@ class App extends React.Component {
     document.getElementById('submit-exam-checkbox').checked = false;
     document.getElementById('route-overlay').style.display = 'block';
     document.getElementById('exam-end-dialog').style.display = 'block';
+  }
+
+  showSubmitSectionDialog = () => {
+    document.getElementById('route-overlay').style.display = 'block';
+    document.getElementById('submit-section-dialog').style.display = 'block';
+  }
+
+  hideSubmitSectionDialog = () => {
+    document.getElementById('submit-section-dialog').style.display = 'none';
+    document.getElementById('route-overlay').style.display = 'none';
+  }
+
+  showSubmitQuestionDialog = () => {
+    document.getElementById('route-overlay').style.display = 'block';
+    document.getElementById('submit-question-dialog').style.display = 'block';
+  }
+
+  hideSubmitQuestionDialog = () => {
+    document.getElementById('submit-question-dialog').style.display = 'none';
+    document.getElementById('route-overlay').style.display = 'none';
   }
 
   componentDidMount = () => {
@@ -266,7 +372,9 @@ class App extends React.Component {
                         />
                         <div className='body-wrapper'>
                             <div className='navigation-wrapper'>
-                                <Navigation />
+                                <Navigation 
+                                  navigateToParticularQuestion={this.navigateToParticularQuestion}
+                                />
                             </div>
                             <div className='content-wrapper m-10'>
                                 <div className='content-loaded' style={{height: "100%"}}>
@@ -279,29 +387,36 @@ class App extends React.Component {
                                         </div>
                                     </div>
                                     <div className='question-header'>
-                                      <div>Question</div>
-                                      <div>
-                                        {
-                                          this.state.setQuestionTimer &&
-                                          <div id='question-timer' className='timer'></div>
-                                        }
-                                      </div>
+                                      {
+                                        this.state.questionLoaded &&
+                                        <>
+                                          <div>Question {this.state.data.question.serialNo}</div>
+                                          <div>
+                                            {
+                                              this.state.setQuestionTimer &&
+                                              <div id='question-timer' className='timer'></div>
+                                            }
+                                          </div>
+                                        </>
+                                      }
                                     </div>
                                     <div className='flex-col flex-full question-loader-wrapper' style={{overflow: "auto"}}>
                                       <div className='p-10 question-loader' style={{height: "100px"}}>
-                                        <div>{this.state.data.question.question}</div>
-                                        <div>{this.state.data.question.score}</div>
-                                        <div>{this.state.data.question.negative}</div>
-                                        <div>{this.state.data.question.timeDuration}</div>
+                                        {
+                                          this.state.questionLoaded &&
+                                          <Question 
+                                            question={this.state.data.question}
+                                          />
+                                        }
                                       </div>
                                     </div>
                                     <div className='btn-container flex-row jc-sb'>
                                       {
-                                        this.state.questionNavigation &&
+                                        (this.state.questionNavigation && !this.state.data.firstQuestion) &&
                                         <button className='btn btn-dark btn-medium' onClick={this.previousQuestion}>Save &#38; Previous</button>
                                       }
                                       {
-                                        !this.state.questionNavigation &&
+                                        (!this.state.questionNavigation || this.state.data.firstQuestion) &&
                                         <div></div>
                                       }
                                       {
@@ -309,17 +424,29 @@ class App extends React.Component {
                                         <button className='btn btn-danger btn-medium' onClick={this.showEndExamDialog}>End Exam</button>
                                       }
                                       {
-                                        this.state.data.lastQuestionOfSection && !this.state.data.lastQuestion &&
-                                        <button className='btn btn-secondary btn-medium' onClick={this.nextQuestion}>Submit Section &#38; Next</button>
+                                        this.state.data.lastQuestionOfSection && !this.state.data.lastQuestion && !this.state.sectionNavigation &&
+                                        <button className='btn btn-secondary btn-medium' onClick={this.showSubmitSectionDialog}>Save &#38; Submit Section</button>
                                       }
                                       {
-                                        !this.state.data.lastQuestion && !this.state.data.lastQuestionOfSection &&
-                                        <button className='btn btn-primary btn-medium' onClick={this.nextQuestion}>Save 	&#38; Next</button>
+                                        !this.state.data.lastQuestion && !this.state.data.lastQuestionOfSection && !this.state.questionNavigation &&
+                                        <button className='btn btn-primary btn-medium' onClick={this.showSubmitQuestionDialog}>Save &#38; Next</button>
+                                      }
+                                      {
+                                        !this.state.data.lastQuestion &&  this.state.questionNavigation && this.state.sectionNavigation &&
+                                        <button className='btn btn-primary btn-medium' onClick={this.nextQuestion}>Save &#38; Next</button>
                                       }
                                     </div>
                                 </div>
                               <ExamEndDialog 
                                 endExam={this.endExamViaDialog}
+                              />
+                              <SubmitSectionDialog 
+                                submitSection={this.submitSection}
+                                closeDialog={this.hideSubmitSectionDialog}
+                              />
+                              <SubmitQuestionDialog 
+                                submitQuestion={this.nextQuestion}
+                                closeDialog={this.hideSubmitQuestionDialog}
                               />
                             </div>
                         </div>
@@ -353,9 +480,12 @@ class App extends React.Component {
           <InvalidURL error={this.state.error}/>
         }
         
-      <div id='route-overlay'></div>
+        <div id='route-overlay'></div>
+        {
+          !this.state.questionLoaded && 
+          <Loader />
+        }
       </div>
-
     )
   }
 }

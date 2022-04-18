@@ -71,6 +71,7 @@ class Section extends React.Component {
                             this.state.questions.map((d, k) => {
                                 return <QuestionNavigate 
                                     question={d}
+                                    navigateToParticularQuestion={this.props.navigateToParticularQuestion}
                                 />
                             })
                         }

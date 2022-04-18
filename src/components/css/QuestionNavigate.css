@@ -1,6 +1,16 @@
 .question-navigate {
     display: flex;
     border-bottom: 0.5px solid rgba(0, 0, 0, 0.2);
+    position: relative;
+}
+.question-navigate-clickable {
+    position: absolute;
+    width: 100%;
+    left: 0;
+    top: 0;
+    height: 100%;
+    background: transparent;
+    z-index: 2;
 }
 .section .questions .question-navigate:first-child {
     /* border-top: 0.5px solid rgba(0, 0, 0, 0.2); */

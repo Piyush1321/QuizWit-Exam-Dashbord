@@ -63,6 +63,7 @@ class Header extends React.Component {
                                         sectionId={d.sectionId}
                                         questions={d.questions}
                                         duration={d.duration}
+                                        navigateToParticularQuestion={this.props.navigateToParticularQuestion}
                                     />
                                 })
                             }
