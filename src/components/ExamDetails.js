@@ -22,7 +22,6 @@ class ExamDetails extends React.Component {
         let url = "http://localhost:8080/QuizWit/FetchExamDetails";
         Request.get(url)
         .then((res) => {
-            console.log(res);
             if(res.success) {
                 let details = res.exam;
                 details.timeDuration = (new TimeToString(details.timeDuration)).convert();
@@ -34,7 +33,6 @@ class ExamDetails extends React.Component {
                     if(time != '-')
                         sectionDetails[i].timeDuration = (new TimeToString(time)).convert();
                 }
-                console.log(sectionDetails);
                 this.setState({
                     exam: res.exam,
                     sections: sectionDetails
@@ -154,7 +152,7 @@ class ExamDetails extends React.Component {
                                     </div>
                                     {
                                         this.state.sections.map((d, k) => {
-                                            return <div>
+                                            return <div key={k}>
                                                 <div>{d.title}</div>
                                                 <div className='section-description'>{d.description}</div>
                                                 <div>{d.questionNavigation == '1' ? <span className='view-block bg-light-success'>On</span> : <span className='view-block bg-light-danger'>Off</span>}</div>

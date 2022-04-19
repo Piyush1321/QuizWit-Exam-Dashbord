@@ -42,8 +42,15 @@ class App extends React.Component {
         sectionNavigation: false,
         currentQuestionNavigationId: 0,
         questionTimer: null,
-        questionLoaded: true
+        questionLoaded: true,
+        dashboardCardData: {
+          attemptedQuestions: 0,
+          totalQuestions: 0,
+          markedAsReviewQuestions: 0,
+          unattemptedQuestions: 0
+        }
     }
+    console.log(this.state.dashboardCardData)
   }
 
   loggedIn = (res) => {
@@ -133,28 +140,41 @@ class App extends React.Component {
       saveResponseQuestionNavigationId: this.state.currentQuestionNavigationId,
       options: options
     };
-    console.log(data);
     return data;
   }
   
   clearResponse = () => {
-    let url = "http://localhost:8080/QuizWit/SaveResponse";
-    let data = {
-      saveResponseQuestionNavigationId: this.state.currentQuestionNavigationId,
-      clear: true
-    }
-    Request.post(url, data)
-    .then((res) => {
-      if(res.success)
-        this.fetchQuestion();
-    });
+      let url = "http://localhost:8080/QuizWit/SaveResponse";
+      let data = {
+        saveResponseQuestionNavigationId: this.state.currentQuestionNavigationId,
+        clear: true
+      }
+      Request.post(url, data)
+      .then((res) => {
+        if(res.success) {
+          if(this.state.data.question.categoryId == 1 || this.state.data.question.categoryId == 2) {
+            let options = document.getElementsByName('mcqOption');
+            if(this.state.data.question.categoryId == 1 || this.state.data.question.categoryId == 2) {
+              let options = document.getElementsByName('mcqOption');
+              for(let i=0; i<options.length; i++)
+                options[i].checked = false;
+            }
+          }
+          else if(this.state.data.question.categoryId == 3) {
+            let trueFalseAnswer = document.getElementsByName('trueFalseAnswer');
+            for(let i=0; i<trueFalseAnswer.length; i++)
+              trueFalseAnswer[i].checked = false;
+          }
+          document.getElementById('clear-response-btn-container').style.display = 'none';
+          this.fetchQuestion();
+        }
+      });
   }
 
   saveResponse = () => {
     let url = "http://localhost:8080/QuizWit/SaveResponse";
     let data = {};
     if(this.state.data.question.categoryId == 1 || this.state.data.question.categoryId == 2) {
-      console.log('MCQ')
       data = this.sendMcqResponse();
     }
     else if(this.state.data.question.categoryId == 3) {
@@ -188,6 +208,19 @@ class App extends React.Component {
       Flash.message(e, 'bg-danger');
     }
   }
+ 
+  fetchDashboardCardData = () => {
+    let url = "http://localhost:8080/QuizWit/ExamDashboardCards";
+    Request.get(url)
+    .then((res) => {
+      console.log(res);
+      if(res.success) {
+        this.setState({
+          dashboardCardData: res.dashboardCardData
+        })
+      }
+    })
+  }
 
   fetchQuestion = () => {
     if(this.state.fetchQuestionId != 0) {
@@ -195,8 +228,6 @@ class App extends React.Component {
       url += this.state.fetchQuestionId;
       Request.get(url)
       .then((res) => {
-        console.log('Fetch Question called');
-        console.log(res);
           if(res.success) {
             if(!res.data.error) {
               this.setState({
@@ -225,6 +256,13 @@ class App extends React.Component {
     }
   }
 
+  // checkCurrentQuestionNavigator = () => {
+  //   let id = 'navigation' + this.state.currentQuestionNavigationId;
+  //   console.log(id);
+  //   let el = document.getElementById(id);
+  //   el.checked = true;
+  // }
+
   renderQuestion = () => {
     if(this.state.questionTimer) {
       this.state.questionTimer.stop();
@@ -232,15 +270,12 @@ class App extends React.Component {
     if(this.state.setQuestionTimer) {
       this.state.questionTimer = new Timer();
       if(this.state.data.lastQuestion) {
-        console.log('EXAM SUBMIT Timer set');
         this.state.questionTimer.set(this.state.data.timeDuration, 'question-timer', this.endExam);
       }
       else if(this.state.data.lastQuestionOfSection && !this.state.sectionNavigation) {
-        console.log('SECTION SUBMIT Timer set');
         this.state.questionTimer.set(this.state.data.timeDuration, 'question-timer', this.submitSection);
       }
       else {
-        console.log('NEXT QUESTION Timer set');
         this.state.questionTimer.set(this.state.data.timeDuration, 'question-timer', this.nextQuestion);
       }
       this.state.questionTimer.start();
@@ -249,6 +284,7 @@ class App extends React.Component {
     this.setState({
       questionLoaded: true
     }, () => {
+      this.fetchDashboardCardData();
       this.hideSubmitSectionDialog();
       this.hideSubmitQuestionDialog();
     })
@@ -258,8 +294,6 @@ class App extends React.Component {
     let url = "http://localhost:8080/QuizWit/StartExam";
     Request.get(url)
     .then((res) => {
-      console.log('Start Exam --------------------->')
-      console.log(res);
         if(res.success) {
           this.setState({
             start: true,
@@ -296,7 +330,6 @@ class App extends React.Component {
       let url = "http://localhost:8080/QuizWit/EndExam";
       Request.post(url, {})
       .then((res) => {
-      console.log(res);
           if(res.success) {
               document.getElementById('route-overlay').style.display = 'none';
               this.logout();
@@ -317,8 +350,6 @@ class App extends React.Component {
 
     Request.post(url, data)
     .then((res) => {
-      console.log('Section Submitted');
-      console.log(res);
       if(res.success) {
         this.nextQuestion();
       }
@@ -425,13 +456,25 @@ class App extends React.Component {
                                 <div className='content-loaded' style={{height: "100%"}}>
                                     <div className='flex-row'>
                                         <div className='dashboard-card-container'>
-                                            <DashboardCard title="Total Questions" value="5" icon="fas fa-users-cog" color="linear-gradient(45deg,rgb(91, 138, 170), rgb(63 155 218))" />
-                                            <DashboardCard title="Attempted" value="3" icon="fas fa-check" color="linear-gradient(45deg, rgb(102, 144, 105), rgb(88 180 95))" />
-                                            <DashboardCard title="Marked as Review" value="4" icon="fas fa-calendar" color="linear-gradient(45deg, rgb(195, 83, 126),rgb(226 54 120))"/>
-                                            <DashboardCard title="Unattempted" value="257" icon="fas fa-users" color="linear-gradient(45deg, rgb(184, 102, 102), rgb(230 76 76))" /> 
+                                            <DashboardCard title="Total Questions" value={this.state.dashboardCardData.totalQuestions} icon="fas fa-users-cog" color="linear-gradient(45deg,rgb(91, 138, 170), rgb(63 155 218))" />
+                                            <DashboardCard title="Attempted" value={this.state.dashboardCardData.attemptedQuestions} icon="fas fa-check" color="linear-gradient(45deg, rgb(102, 144, 105), rgb(88 180 95))" />
+                                            <DashboardCard title="Marked as Review" value={this.state.dashboardCardData.markedAsReviewQuestions} icon="fas fa-calendar" color="linear-gradient(45deg, rgb(195, 83, 126),rgb(226 54 120))"/>
+                                            <DashboardCard title="Unattempted" value={this.state.dashboardCardData.unattemptedQuestions} icon="fas fa-users" color="linear-gradient(45deg, rgb(184, 102, 102), rgb(230 76 76))" /> 
                                         </div>
                                     </div>
                                     <div className='question-header'>
+                                      {
+                                        this.state.data.question.attempted &&
+                                        <i className='fas fa-bookmark success'></i>
+                                      }
+                                      {
+                                        this.state.data.question.unattempted &&
+                                        <i className='fas fa-bookmark danger'></i>
+                                      }
+                                      {
+                                        this.state.data.question.markedAsReview &&
+                                        <i className='fas fa-bookmark tertiary'></i>
+                                      }
                                       {
                                         this.state.questionLoaded &&
                                         <>
@@ -455,7 +498,7 @@ class App extends React.Component {
                                               </span>
                                             </div>
                                           </div>
-                                          <div>
+                                          <div className='flex-row ai-c'>
                                             <span>Score: {this.state.data.question.score}</span>
                                             <span className='gray mr-10 ml-10'>|</span>
                                             <span>Negative: {this.state.data.question.negative}</span>
@@ -463,7 +506,7 @@ class App extends React.Component {
                                                 this.state.setQuestionTimer &&
                                                 <div id='question-timer' className='timer ml-10'></div>
                                               }
-                                            <button className='btn btn-fade btn-small ml-10' onClick={this.clearResponse}>Clear</button>
+                                            <div style={{width: "40px"}}></div>
                                           </div>
                                         </>
                                       }
@@ -474,6 +517,7 @@ class App extends React.Component {
                                           this.state.questionLoaded &&
                                           <Question 
                                             question={this.state.data.question}
+                                            clearResponse={this.clearResponse}
                                           />
                                         }
                                       </div>

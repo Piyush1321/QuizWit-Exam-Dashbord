@@ -6,7 +6,12 @@ class QuestionNavigate extends React.Component {
   
     constructor(props) {
         super(props);
-
+        let attempted = this.props.question.attempted ? 'attempted-question' : '';
+        let markedAsReview = this.props.question.markedAsReview ? 'marked-as-review-question' : '';
+        this.state = {
+            attempted: attempted,
+            markedAsReview: markedAsReview
+        }
     }
 
     componentDidMount = () => {
@@ -15,9 +20,9 @@ class QuestionNavigate extends React.Component {
     render = () => {
         return (
             <>
-                <label className='question-navigate'>
-                    <input type="radio" name="questionNavigate" />
-                    <span>
+                <label className='question-navigate' key={this.props.key}>
+                    <input id={'navigation' + this.props.question.navigationId} type="radio" name="questionNavigate" value={this.props.question.navigationId}/>
+                    <span  className={this.state.attempted + ' ' + this.state.markedAsReview}>
                         <div>
                             <div className='flex-row'>
                                 <div className='serial-no'>

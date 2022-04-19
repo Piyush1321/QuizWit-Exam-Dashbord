@@ -21,9 +21,7 @@ class Section extends React.Component {
         let sections = document.getElementsByClassName('section');
         let questions = document.getElementsByClassName('questions');
         for(let i=0; i<sections.length; i++) {
-            if(i == 0) {
-                questions[i].style.display = 'block';
-            }
+            questions[i].style.display = 'block';
             let toggleUp = sections[i].getElementsByClassName('toggle-up')[0];
             let toggleDown = sections[i].getElementsByClassName('toggle-down')[0];
             toggleUp.addEventListener('click', () => {
@@ -47,7 +45,7 @@ class Section extends React.Component {
     render = () => {
         return (
             <>
-                <div className='section'>
+                <div className='section' key={this.props.key}>
                     <div className='info'>
                         <div className='name-timer'>
                             <div className='secondary'>
@@ -70,6 +68,7 @@ class Section extends React.Component {
                         {
                             this.state.questions.map((d, k) => {
                                 return <QuestionNavigate 
+                                    key={k}
                                     question={d}
                                     navigateToParticularQuestion={this.props.navigateToParticularQuestion}
                                 />

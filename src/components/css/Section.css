@@ -22,6 +22,9 @@
     align-items: center;
 }
 .section .toggle-up {
+    /* display: none; */
+}
+.section .toggle-down {
     display: none;
 }
 .section .toggle:hover {

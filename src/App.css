@@ -710,6 +710,14 @@ input::-webkit-inner-spin-button {
   align-items: center;
   border-bottom: 0.5px solid rgba(0, 0, 0, 0.3);
   height: 30px;
+  position: relative;
+  overflow: hidden;
+}
+.question-header .fa-bookmark {
+  position: absolute;
+  right: 10px;
+  top: -2px;
+  font-size: 34px;
 }
 .content-wrapper .btn-container {
   border-bottom-left-radius: 10px;
@@ -729,4 +737,16 @@ input::-webkit-inner-spin-button {
 }
 .exam-name-login > span {
   color: gray;
+}
+.attempted-question {    
+  background: rgba(24, 155, 35, 0.1);
+  color: rgba(24, 155, 35);
+}
+.review-question {
+  background: rgba(24, 155, 35, 0.1);
+  color: rgba(24, 155, 35);
+}
+.marked-as-review-question {
+  background: rgb(223, 81, 135, 0.1);
+  color: rgb(223 81 135);
 }

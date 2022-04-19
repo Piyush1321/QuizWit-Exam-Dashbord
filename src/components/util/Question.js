@@ -21,18 +21,26 @@ class Question extends React.Component {
                 </div>
                 {
                     this.state.question.categoryId == 3 &&
-                    <TrueFalse />
+                    <TrueFalse 
+                        trueFalseAnswer={this.state.question.trueFalseAnswer}
+                        clearResponse={this.props.clearResponse}
+                        attempted={this.state.question.attempted}
+                    />
                 }
                 {
                     this.state.question.categoryId == 1 &&
                     <MCQSingleCorrect 
                         mcqOptions={this.state.question.mcqOptions}
+                        clearResponse={this.props.clearResponse}
+                        attempted={this.state.question.attempted}
                     />
                 }
                 {
                     this.state.question.categoryId == 2 &&
                     <MCQMultipleCorrect
                         mcqOptions={this.state.question.mcqOptions}
+                        clearResponse={this.props.clearResponse}
+                        attempted={this.state.question.attempted}
                     />
                 }
             </>
