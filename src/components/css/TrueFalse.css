@@ -1,0 +1,33 @@
+
+.true-false-option {
+    display: flex;
+    margin: 20px 0px;
+    flex-direction: column;
+}
+.true-false-option h3 {
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+.true-false-option input {
+    display: none;
+}
+.true-false-option > div {
+    display: flex;
+}
+.true-false-option span {
+    border: 0.5px solid rgba(0, 0, 0, 0.4);
+    height: 40px;
+    width: 60px;
+    border-radius: 3px;
+    margin-right: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
+.true-false-option input:checked ~ span {
+    background: rgb(8, 156, 255, 0.7);
+    color: white;
+}
+

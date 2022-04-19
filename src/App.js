@@ -95,34 +95,77 @@ class App extends React.Component {
   }
 
   nextQuestion = () => {
-    this.setState({
-      questionLoaded: false
-    }, () => {
       this.state.fetchQuestionId = this.state.data.nextQuestionToFetch;
       this.saveResponse();
-    });
   }
 
   previousQuestion = () => {
-    this.setState({
-      questionLoaded: false
-    }, () => {
       this.state.fetchQuestionId = this.state.data.previousQuestionToFetch;
       this.saveResponse();
+  }
+
+  sendTrueFalseResponse = () => {
+    let el = document.getElementsByName('trueFalseAnswer');
+    let value = el[0].checked ? el[0].value : '';
+    if(value == '')
+      value = el[1].checked ? el[1].value : '';
+    let data = {
+      saveResponseQuestionNavigationId: this.state.currentQuestionNavigationId,
+      trueFalseAnswer: value
+    };
+    return data;
+  }
+
+  sendMcqResponse = () => {
+    
+    let el = document.getElementsByName('mcqOption');
+    let options = '';
+    for(let i=0; i<el.length; i++) {
+      if(el[i].checked) {
+        options += el[i].value;
+        if(i != el.length - 1)
+          options += ',';
+      }
+    }
+    let data = {
+      saveResponseQuestionNavigationId: this.state.currentQuestionNavigationId,
+      options: options
+    };
+    console.log(data);
+    return data;
+  }
+  
+  clearResponse = () => {
+    let url = "http://localhost:8080/QuizWit/SaveResponse";
+    let data = {
+      saveResponseQuestionNavigationId: this.state.currentQuestionNavigationId,
+      clear: true
+    }
+    Request.post(url, data)
+    .then((res) => {
+      if(res.success)
+        this.fetchQuestion();
     });
   }
 
   saveResponse = () => {
     let url = "http://localhost:8080/QuizWit/SaveResponse";
-
-    let data = {
-      saveResponseQuestionNavigationId: this.state.currentQuestionNavigationId
-    };
-
-    Request.post(url, data)
-    .then((res) => {
-      if(res.success)
-        this.fetchQuestion();
+    let data = {};
+    if(this.state.data.question.categoryId == 1 || this.state.data.question.categoryId == 2) {
+      console.log('MCQ')
+      data = this.sendMcqResponse();
+    }
+    else if(this.state.data.question.categoryId == 3) {
+      data = this.sendTrueFalseResponse();
+    }
+    this.setState({
+      questionLoaded: false
+    }, () => {
+      Request.post(url, data)
+      .then((res) => {
+        if(res.success)
+          this.fetchQuestion();
+      });
     });
   }
 
@@ -390,12 +433,35 @@ class App extends React.Component {
                                       {
                                         this.state.questionLoaded &&
                                         <>
-                                          <div>Question {this.state.data.question.serialNo}</div>
+                                          <div className='flex-row ai-c'>
+                                            <div>
+                                              <span className='mr-10'>Question {this.state.data.question.serialNo}</span>
+                                              <span className='gray mr-10'>|</span>
+                                              <span className='primary' style={{fontSize: "14px"}}>
+                                                {
+                                                  this.state.data.question.categoryId == '1' &&
+                                                  'MCQ Single Correct'
+                                                }
+                                                {
+                                                  this.state.data.question.categoryId == '2' &&
+                                                  'MCQ Multiple Correct'
+                                                }
+                                                {
+                                                  this.state.data.question.categoryId == '3' &&
+                                                  'True or False'
+                                                }
+                                              </span>
+                                            </div>
+                                          </div>
                                           <div>
-                                            {
-                                              this.state.setQuestionTimer &&
-                                              <div id='question-timer' className='timer'></div>
-                                            }
+                                            <span>Score: {this.state.data.question.score}</span>
+                                            <span className='gray mr-10 ml-10'>|</span>
+                                            <span>Negative: {this.state.data.question.negative}</span>
+                                              {
+                                                this.state.setQuestionTimer &&
+                                                <div id='question-timer' className='timer ml-10'></div>
+                                              }
+                                            <button className='btn btn-fade btn-small ml-10' onClick={this.clearResponse}>Clear</button>
                                           </div>
                                         </>
                                       }
