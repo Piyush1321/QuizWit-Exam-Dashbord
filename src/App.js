@@ -117,14 +117,16 @@ class App extends React.Component {
   }
 
   sendMcqResponse = () => {
-    
+
     let el = document.getElementsByName('mcqOption');
     let options = '';
     for(let i=0; i<el.length; i++) {
       if(el[i].checked) {
         options += el[i].value;
-        if(i != el.length - 1)
-          options += ',';
+        if(this.state.data.question.categoryId == 2) {
+          if(i != el.length - 1)
+            options += ',';
+        }
       }
     }
     let data = {
