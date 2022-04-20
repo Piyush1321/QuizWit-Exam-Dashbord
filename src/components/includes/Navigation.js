@@ -34,8 +34,10 @@ class Header extends React.Component {
                                         key={k}
                                         title={d.title}
                                         sectionId={d.sectionId}
+                                        sectionNavigationId={d.sectionNavigationId}
                                         questions={d.questions}
                                         duration={d.duration}
+                                        submitSection={this.props.submitSection}
                                         navigateToParticularQuestion={this.props.navigateToParticularQuestion}
                                     />
                                 })

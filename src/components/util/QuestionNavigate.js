@@ -34,6 +34,7 @@ class QuestionNavigate extends React.Component {
                             </div>
                             <div className='flex-row'>
                                 <div className='serial-no'>
+                                    <div id={this.props.sectionNavigationId + "COMBO" + this.props.question.serialNo} className={this.props.question.navigationId}></div>
                                 </div>
                                 <div className='flex-full'>score: {this.props.question.score}</div>
                                 <div className='flex-full'>Negative: {this.props.question.negative}</div>

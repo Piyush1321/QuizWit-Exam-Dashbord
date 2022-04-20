@@ -12,10 +12,6 @@ class Section extends React.Component {
         }
     }
 
-    submitSection = () => {
-        console.log('submit-section');
-    }
-
     componentDidMount = () => {
 
         let sections = document.getElementsByClassName('section');
@@ -35,11 +31,6 @@ class Section extends React.Component {
                 toggleDown.style.display = 'none';
             });
         }
-
-        const timer = new Timer();
-        timer.set(this.props.duration, 'section-timer' + this.props.sectionId, this.submitSection);
-        timer.setRemove();
-        timer.start();
     }
 
     render = () => {
@@ -53,7 +44,8 @@ class Section extends React.Component {
                             </div>
                             <div>
                                 <div>
-                                    <div id={'section-timer' + this.props.sectionId}></div>
+                                    {this.props.sectionNavigationId}
+                                    <div id={'sectionTimer' + this.props.sectionNavigationId}></div>
                                 </div>
                             </div>
                         </div>
@@ -71,6 +63,7 @@ class Section extends React.Component {
                                     key={k}
                                     question={d}
                                     navigateToParticularQuestion={this.props.navigateToParticularQuestion}
+                                    sectionNavigationId={this.props.sectionNavigationId}
                                 />
                             })
                         }

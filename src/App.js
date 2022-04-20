@@ -43,6 +43,7 @@ class App extends React.Component {
         sectionNavigation: false,
         currentQuestionNavigationId: 0,
         questionTimer: null,
+        sectionTimer: null,
         questionLoaded: true,
         sections: [],
         dashboardCardData: {
@@ -228,6 +229,7 @@ class App extends React.Component {
       url += this.state.fetchQuestionId;
       Request.get(url)
       .then((res) => {
+        console.log(res);
           if(res.success) {
             if(!res.data.error) {
               this.setState({
@@ -356,7 +358,34 @@ class App extends React.Component {
       });
   }
 
+  getSectionTimer = () => {
+    let url = "http://localhost:8080/QuizWit/GetSectionTimer";
+    Request.get(url)
+    .then((res) => {
+      console.log(res);
+      if(res.success) {
+        if(res.navigationId) {
+          let timerId = 'sectionTimer' + res.navigationId;
+          let el = document.getElementById(res.navigationId + "COMBO" + 1); // fetch next section frist question
+          let nextQuestionId = parseInt(el.className);
+          console.log(nextQuestionId);
+          this.setState({
+            fetchQuestionId: nextQuestionId,
+          }, () => {
+            if(res.setSectionTimer) {
+              this.state.sectionTimer = new Timer();
+              this.state.sectionTimer.set(res.timeDuration, timerId, this.submitSection);
+              this.state.sectionTimer.start();
+            }
+            this.saveResponse();
+          });
+        }
+      }
+    })
+  }
+
   submitSection = () => {
+    console.log('Seciont submitted ----------------------------->')
     let url = "http://localhost:8080/QuizWit/SubmitSection";
 
     let data = {
@@ -365,8 +394,12 @@ class App extends React.Component {
 
     Request.post(url, data)
     .then((res) => {
+      console.log(res);
       if(res.success) {
-        this.nextQuestion();
+        if(res.endExam) {
+          this.endExam();
+        }
+        else this.getSectionTimer();
       }
     });
   }
@@ -443,6 +476,7 @@ class App extends React.Component {
                 sectionNavigation: response.data.sectionNavigation,
                 currentQuestionNavigationId: response.data.question.navigationId
               }, () => {
+                this.getSectionTimer();
                 this.renderQuestion();
               });
             });
@@ -504,6 +538,7 @@ class App extends React.Component {
                                 <Navigation 
                                   navigateToParticularQuestion={this.navigateToParticularQuestion}
                                   sections={this.state.sections}
+                                  submitSection={this.submitSection}
                                 />
                             </div>
                             <div className='content-wrapper m-10'>
@@ -598,7 +633,7 @@ class App extends React.Component {
                                         <button className='btn btn-primary btn-medium' onClick={this.showSubmitQuestionDialog}>Save &#38; Next</button>
                                       }
                                       {
-                                        !this.state.data.lastQuestion &&  this.state.questionNavigation && this.state.sectionNavigation &&
+                                        !this.state.data.lastQuestion && !this.state.data.lastQuestionOfSection && this.state.questionNavigation &&
                                         <button className='btn btn-primary btn-medium' onClick={this.nextQuestion}>Save &#38; Next</button>
                                       }
                                     </div>
