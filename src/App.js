@@ -7,6 +7,7 @@ import '../src/App.css';
 import '../src/css/Input.css';
 import Signin from './components/Signin';
 import Flash from './components/services/Flash';
+import TimeToString from './components/services/TimeToString';
 import ExamDetails from './components/ExamDetails';
 import Request from './components/services/Request';
 import InvalidURL from './components/InvalidURL';
@@ -43,6 +44,7 @@ class App extends React.Component {
         currentQuestionNavigationId: 0,
         questionTimer: null,
         questionLoaded: true,
+        sections: [],
         dashboardCardData: {
           attemptedQuestions: 0,
           totalQuestions: 0,
@@ -50,7 +52,6 @@ class App extends React.Component {
           unattemptedQuestions: 0
         }
     }
-    console.log(this.state.dashboardCardData)
   }
 
   loggedIn = (res) => {
@@ -213,7 +214,6 @@ class App extends React.Component {
     let url = "http://localhost:8080/QuizWit/ExamDashboardCards";
     Request.get(url)
     .then((res) => {
-      console.log(res);
       if(res.success) {
         this.setState({
           dashboardCardData: res.dashboardCardData
@@ -256,12 +256,36 @@ class App extends React.Component {
     }
   }
 
-  // checkCurrentQuestionNavigator = () => {
-  //   let id = 'navigation' + this.state.currentQuestionNavigationId;
-  //   console.log(id);
-  //   let el = document.getElementById(id);
-  //   el.checked = true;
-  // }
+  checkCurrentQuestionNavigator = () => {
+    let id = 'navigation' + this.state.currentQuestionNavigationId;
+    console.log(id);
+    let el = document.getElementById(id);
+    el.checked = true;
+  }
+
+  highlightQuestionNavigationStatus = () => {
+    //
+    let url = "http://localhost:8080/QuizWit/LoadQuestionNavigationStatus";
+    
+    Request.get(url)
+    .then((res) => {
+      if(res.success) {
+        let questions = res.questions;
+        for(let i=0; i<questions.length; i++) {
+          let id = 'navigationStatus' + questions[i].navigationId;
+          let el = document.getElementById(id);
+          let className = '';
+          if(questions[i].attempted == '1')
+            className = 'attempted-question';
+          else if(questions[i].markedAsReview == '1')
+            className = 'marked-as-review-question';
+          
+          el.className = className;
+
+        }
+      }
+    })
+  }
 
   renderQuestion = () => {
     if(this.state.questionTimer) {
@@ -284,9 +308,11 @@ class App extends React.Component {
     this.setState({
       questionLoaded: true
     }, () => {
+      this.checkCurrentQuestionNavigator();
       this.fetchDashboardCardData();
       this.hideSubmitSectionDialog();
       this.hideSubmitQuestionDialog();
+      this.highlightQuestionNavigationStatus();
     })
   }
 
@@ -295,20 +321,7 @@ class App extends React.Component {
     Request.get(url)
     .then((res) => {
         if(res.success) {
-          this.setState({
-            start: true,
-            entireExamTimeDuration: res.entireExamTimeDuration,
-            examTitle: res.examTitle,
-            setExamTimer: res.setExamTimer,
-            data: res.data,
-            setQuestionTimer: res.data.question.setQuestionTimer,
-            questionNavigation: res.data.questionNavigation,
-            sectionNavigation: res.data.sectionNavigation,
-            currentQuestionNavigationId: res.data.question.navigationId
-          }, () => {
-            this.renderQuestion();
-          })
-          // Flash.message(res.success, 'bg-success');
+          this.fetchNavigationDetails(res);
         }
         else {
             Flash.message(res.error, 'bg-danger');
@@ -399,6 +412,44 @@ class App extends React.Component {
     document.getElementById('route-overlay').style.display = 'none';
   }
 
+
+  fetchNavigationDetails = (response) => {
+    let url = 'http://localhost:8080/QuizWit/FetchSectionAndQuestionNavigationDetails';
+    Request.get(url)
+    .then((res) => {
+        if(res.success) {
+            let data = res.sections;
+            for(let i=0; i<data.length; i++) {
+                let questions = data[i].questions;
+                data[i]["viewDuration"] = (new TimeToString(data[i].duration)).convert();
+                for(let j=0; j<questions.length; j++) {
+                    questions[j]["serialNo"] = j+1;
+                }
+                data[i].questions = questions;
+            }
+            this.setState({
+                sections: data
+            }, () => {
+              this.setState({
+                start: true,
+                entireExamTimeDuration: response.entireExamTimeDuration,
+                examTitle: response.examTitle,
+                setExamTimer: response.setExamTimer,
+                data: response.data,
+                setQuestionTimer: response.data.question.setQuestionTimer,
+                questionNavigation: response.data.questionNavigation,
+                sectionNavigation: response.data.sectionNavigation,
+                currentQuestionNavigationId: response.data.question.navigationId
+              }, () => {
+                this.renderQuestion();
+              });
+            });
+        }
+        else {
+            Flash.message(res.error, 'bg-danger');
+        }
+    })
+  }
   componentDidMount = () => {
     this.login();
     let obj = this.checkIfURLIsValid();
@@ -450,6 +501,7 @@ class App extends React.Component {
                             <div className='navigation-wrapper'>
                                 <Navigation 
                                   navigateToParticularQuestion={this.navigateToParticularQuestion}
+                                  sections={this.state.sections}
                                 />
                             </div>
                             <div className='content-wrapper m-10'>

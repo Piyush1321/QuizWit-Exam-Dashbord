@@ -22,7 +22,7 @@ class QuestionNavigate extends React.Component {
             <>
                 <label className='question-navigate' key={this.props.key}>
                     <input id={'navigation' + this.props.question.navigationId} type="radio" name="questionNavigate" value={this.props.question.navigationId}/>
-                    <span  className={this.state.attempted + ' ' + this.state.markedAsReview}>
+                    <span  id={'navigationStatus' + this.props.question.navigationId} className={this.state.attempted + ' ' + this.state.markedAsReview}>
                         <div>
                             <div className='flex-row'>
                                 <div className='serial-no'>
