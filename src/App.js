@@ -182,14 +182,10 @@ class App extends React.Component {
     else if(this.state.data.question.categoryId == 3) {
       data = this.sendTrueFalseResponse();
     }
-    this.setState({
-      questionLoaded: false
-    }, () => {
-      Request.post(url, data)
-      .then((res) => {
-        if(res.success)
-          this.fetchQuestion();
-      });
+    Request.post(url, data)
+    .then((res) => {
+      if(res.success)
+        this.fetchQuestion();
     });
   }
 
@@ -201,7 +197,6 @@ class App extends React.Component {
       if(this.state.fetchQuestionId != id) {
         this.setState({
           fetchQuestionId: id,
-          questionLoaded: false
         }, () => {
           this.fetchQuestion();
         });
@@ -229,19 +224,29 @@ class App extends React.Component {
       url += this.state.fetchQuestionId;
       Request.get(url)
       .then((res) => {
-        console.log(res);
           if(res.success) {
             if(!res.data.error) {
-              this.setState({
-                data: res.data,
-                setQuestionTimer: res.data.question.setQuestionTimer,
-                questionNavigation: res.data.questionNavigation,
-                sectionNavigation: res.data.sectionNavigation,
-                currentQuestionNavigationId: res.data.question.navigationId,
-                questionLoaded: true
-              }, () => {
-                this.renderQuestion();
-              })
+              if(res.data) {
+                this.setState({
+                  questionLoaded: false
+                }, () => {
+                  console.log(this.state.questionLoaded);
+                  this.setState({
+                    data: res.data,
+                    setQuestionTimer: res.data.question.setQuestionTimer,
+                    questionNavigation: res.data.questionNavigation,
+                    sectionNavigation: res.data.sectionNavigation,
+                    currentQuestionNavigationId: res.data.question.navigationId
+                  }, () => {
+                    this.setState({
+                      questionLoaded: true
+                    }, () => {
+                      console.log(this.state.questionLoaded);
+                      this.renderQuestion();
+                    });
+                  });
+                });
+              }
             }
             else {
               this.setState({
@@ -261,7 +266,6 @@ class App extends React.Component {
 
   checkCurrentQuestionNavigator = () => {
     let id = 'navigation' + this.state.currentQuestionNavigationId;
-    console.log(id);
     let el = document.getElementById(id);
     el.checked = true;
   }
@@ -310,14 +314,11 @@ class App extends React.Component {
       this.state.questionTimer.start();
     }
 
-    this.setState({
-    }, () => {
-      this.checkCurrentQuestionNavigator();
-      this.fetchDashboardCardData();
-      this.hideSubmitSectionDialog();
-      this.hideSubmitQuestionDialog();
-      this.highlightQuestionNavigationStatus();
-    })
+    this.checkCurrentQuestionNavigator();
+    this.fetchDashboardCardData();
+    this.hideSubmitSectionDialog();
+    this.hideSubmitQuestionDialog();
+    this.highlightQuestionNavigationStatus();
   }
 
   startExam = () => {
@@ -362,17 +363,17 @@ class App extends React.Component {
     let url = "http://localhost:8080/QuizWit/GetSectionTimer";
     Request.get(url)
     .then((res) => {
-      console.log(res);
       if(res.success) {
         if(res.navigationId) {
           let timerId = 'sectionTimer' + res.navigationId;
           let el = document.getElementById(res.navigationId + "COMBO" + 1); // fetch next section frist question
           let nextQuestionId = parseInt(el.className);
-          console.log(nextQuestionId);
+          
           this.setState({
             fetchQuestionId: nextQuestionId,
           }, () => {
             if(res.setSectionTimer) {
+
               this.state.sectionTimer = new Timer();
               this.state.sectionTimer.set(res.timeDuration, timerId, this.submitSection);
               this.state.sectionTimer.start();
@@ -385,7 +386,6 @@ class App extends React.Component {
   }
 
   submitSection = () => {
-    console.log('Seciont submitted ----------------------------->')
     let url = "http://localhost:8080/QuizWit/SubmitSection";
 
     let data = {
@@ -394,7 +394,6 @@ class App extends React.Component {
 
     Request.post(url, data)
     .then((res) => {
-      console.log(res);
       if(res.success) {
         if(res.endExam) {
           this.endExam();

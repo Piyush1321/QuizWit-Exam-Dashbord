@@ -44,7 +44,6 @@ class Section extends React.Component {
                             </div>
                             <div>
                                 <div>
-                                    {this.props.sectionNavigationId}
                                     <div id={'sectionTimer' + this.props.sectionNavigationId}></div>
                                 </div>
                             </div>
