@@ -235,7 +235,8 @@ class App extends React.Component {
                 setQuestionTimer: res.data.question.setQuestionTimer,
                 questionNavigation: res.data.questionNavigation,
                 sectionNavigation: res.data.sectionNavigation,
-                currentQuestionNavigationId: res.data.question.navigationId
+                currentQuestionNavigationId: res.data.question.navigationId,
+                questionLoaded: true
               }, () => {
                 this.renderQuestion();
               })
@@ -288,25 +289,26 @@ class App extends React.Component {
   }
 
   renderQuestion = () => {
+
     if(this.state.questionTimer) {
       this.state.questionTimer.stop();
     }
     if(this.state.setQuestionTimer) {
+      let timerId = 'questionTimer' + this.state.currentQuestionNavigationId;
       this.state.questionTimer = new Timer();
       if(this.state.data.lastQuestion) {
-        this.state.questionTimer.set(this.state.data.timeDuration, 'question-timer', this.endExam);
+        this.state.questionTimer.set(this.state.data.timeDuration, timerId, this.endExam);
       }
       else if(this.state.data.lastQuestionOfSection && !this.state.sectionNavigation) {
-        this.state.questionTimer.set(this.state.data.timeDuration, 'question-timer', this.submitSection);
+        this.state.questionTimer.set(this.state.data.timeDuration, timerId, this.submitSection);
       }
       else {
-        this.state.questionTimer.set(this.state.data.timeDuration, 'question-timer', this.nextQuestion);
+        this.state.questionTimer.set(this.state.data.timeDuration, timerId, this.nextQuestion);
       }
       this.state.questionTimer.start();
     }
 
     this.setState({
-      questionLoaded: true
     }, () => {
       this.checkCurrentQuestionNavigator();
       this.fetchDashboardCardData();
@@ -556,7 +558,7 @@ class App extends React.Component {
                                             <span>Negative: {this.state.data.question.negative}</span>
                                               {
                                                 this.state.setQuestionTimer &&
-                                                <div id='question-timer' className='timer ml-10'></div>
+                                                <div id={'questionTimer' + this.state.currentQuestionNavigationId} className='timer ml-10'></div>
                                               }
                                             <div style={{width: "40px"}}></div>
                                           </div>
