@@ -17,7 +17,6 @@ class Section extends React.Component {
         let sections = document.getElementsByClassName('section');
         let questions = document.getElementsByClassName('questions');
         for(let i=0; i<sections.length; i++) {
-            questions[i].style.display = 'block';
             let toggleUp = sections[i].getElementsByClassName('toggle-up')[0];
             let toggleDown = sections[i].getElementsByClassName('toggle-down')[0];
             toggleUp.addEventListener('click', () => {
@@ -43,8 +42,8 @@ class Section extends React.Component {
                                 {this.props.title}
                             </div>
                             <div>
-                                <div>
-                                    <div id={'sectionTimer' + this.props.sectionNavigationId}></div>
+                                <div style={{fontSize: "15px"}}>
+                                    <span className='gray mr-10'>Navigation</span> {this.props.questionNavigation ? <span className='success'>On</span> : <span className='danger'>Off</span>}
                                 </div>
                             </div>
                         </div>

@@ -644,8 +644,9 @@ input::-webkit-inner-spin-button {
   border-radius: 5px;
   color: rgb(70 162 227);
   font-weight: 500;
-  width: 80px;
+  width: 90px;
   height: 28px;
+  font-size: 16px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -655,8 +656,9 @@ input::-webkit-inner-spin-button {
   border-radius: 5px;
   color: rgb(70 162 227);
   font-weight: 500;
-  width: 80px;
+  width: 90px;
   height: 28px;
+  font-size: 16px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -667,7 +669,7 @@ input::-webkit-inner-spin-button {
 
 /* main settings */
 .navigation-wrapper {
-    width: 300px;
+    width: 350px;
     background: white;
     display: flex;
     border-radius: 10px;
@@ -749,4 +751,8 @@ input::-webkit-inner-spin-button {
 .marked-as-review-question {
   background: rgb(223, 81, 135, 0.1);
   color: rgb(223 81 135);
+}
+
+.timer {
+  display: none;
 }

@@ -24,7 +24,10 @@ class Timer {
     labelView() {
         this.label = true;
     }
-
+    destroy() {
+        this.stop();
+        this.element.remove();
+    }
     start(type = 'COUNT_DOWN') {
         this.control = true;
 

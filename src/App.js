@@ -184,7 +184,10 @@ class App extends React.Component {
     }
     Request.post(url, data)
     .then((res) => {
-      if(res.success)
+      if(res.examEnd) {
+        this.endExam();
+      }
+      else if(res.success)
         this.fetchQuestion();
     });
   }
@@ -230,7 +233,6 @@ class App extends React.Component {
                 this.setState({
                   questionLoaded: false
                 }, () => {
-                  console.log(this.state.questionLoaded);
                   this.setState({
                     data: res.data,
                     setQuestionTimer: res.data.question.setQuestionTimer,
@@ -241,7 +243,6 @@ class App extends React.Component {
                     this.setState({
                       questionLoaded: true
                     }, () => {
-                      console.log(this.state.questionLoaded);
                       this.renderQuestion();
                     });
                   });
@@ -286,9 +287,7 @@ class App extends React.Component {
             className = 'attempted-question';
           else if(questions[i].markedAsReview == '1')
             className = 'marked-as-review-question';
-          
           el.className = className;
-
         }
       }
     })
@@ -322,6 +321,8 @@ class App extends React.Component {
   }
 
   startExam = () => {
+    let btn = document.getElementById('start-exam-btn');
+    btn.innerHTML = '<i class="fas fa-sync fa-spin mr-5"></i> Starting'
     let url = "http://localhost:8080/QuizWit/StartExam";
     Request.get(url)
     .then((res) => {
@@ -329,6 +330,7 @@ class App extends React.Component {
           this.fetchNavigationDetails(res);
         }
         else {
+            btn.innerHTML = '<i className="fas fa-play mr-5"></i> Start';
             Flash.message(res.error, 'bg-danger');
         }
     })
@@ -372,8 +374,14 @@ class App extends React.Component {
           this.setState({
             fetchQuestionId: nextQuestionId,
           }, () => {
+            if(this.state.sectionTimer) {
+              console.log('timer exist destroying.....')
+              this.state.sectionTimer.destroy();
+            }
+            else {
+              console.log('timer not exist');
+            }
             if(res.setSectionTimer) {
-
               this.state.sectionTimer = new Timer();
               this.state.sectionTimer.set(res.timeDuration, timerId, this.submitSection);
               this.state.sectionTimer.start();
@@ -394,11 +402,11 @@ class App extends React.Component {
 
     Request.post(url, data)
     .then((res) => {
+      if(res.endExam) {
+        this.endExam();
+      }
       if(res.success) {
-        if(res.endExam) {
-          this.endExam();
-        }
-        else this.getSectionTimer();
+        this.getSectionTimer();
       }
     });
   }
@@ -452,7 +460,9 @@ class App extends React.Component {
     Request.get(url)
     .then((res) => {
         if(res.success) {
+
             let data = res.sections;
+            console.log(data);
             for(let i=0; i<data.length; i++) {
                 let questions = data[i].questions;
                 data[i]["viewDuration"] = (new TimeToString(data[i].duration)).convert();
@@ -485,6 +495,27 @@ class App extends React.Component {
         }
     })
   }
+
+  markAsReview = () => {
+    let data = {
+      questionNavigationId: this.state.currentQuestionNavigationId,
+      status: 1
+    }
+    this.toggleQuestionReviewStatus(data);
+  }
+  removeFromReview = () => {
+    let data = {
+      questionNavigationId: this.state.currentQuestionNavigationId,
+      status: 0
+    }
+    this.toggleQuestionReviewStatus(data);
+  }
+
+  toggleQuestionReviewStatus = (data) => {
+    // let url 
+
+  }
+
   componentDidMount = () => {
     this.login();
     let obj = this.checkIfURLIsValid();
@@ -538,6 +569,7 @@ class App extends React.Component {
                                   navigateToParticularQuestion={this.navigateToParticularQuestion}
                                   sections={this.state.sections}
                                   submitSection={this.submitSection}
+                                  sectionNavigation={this.state.sectionNavigation}
                                 />
                             </div>
                             <div className='content-wrapper m-10'>
@@ -594,6 +626,14 @@ class App extends React.Component {
                                                 this.state.setQuestionTimer &&
                                                 <div id={'questionTimer' + this.state.currentQuestionNavigationId} className='timer ml-10'></div>
                                               }
+                                              {
+                                                !this.state.data.question.markedAsReview &&
+                                                <button className='btn btn-small btn-tertiary ml-10' onClick={this.markAsReview}>Mark as Review</button>
+                                              }    
+                                              {
+                                                this.state.data.question.markedAsReview &&
+                                                <button className='btn btn-small btn-tertiary ml-10' onClick={this.removeFromReview}>Remove from Review</button>
+                                              }        
                                             <div style={{width: "40px"}}></div>
                                           </div>
                                         </>

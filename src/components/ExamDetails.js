@@ -27,6 +27,7 @@ class ExamDetails extends React.Component {
                 details.timeDuration = (new TimeToString(details.timeDuration)).convert();
                 details.windowTime = (new TimeToString(details.windowTime)).convert();
                 details.startTime = (new DateTime(parseInt(details.startTime))).convertToView();
+                details.endTime = (new DateTime(parseInt(details.endTime))).convertToView();
                 let sectionDetails = res.exam.sections;
                 for(let i=0; i<sectionDetails.length; i++) {
                     let time = sectionDetails[i].timeDuration;
@@ -116,6 +117,12 @@ class ExamDetails extends React.Component {
                                     <div>Start Time</div>
                                     <div>
                                         <span className='view-block bg-light-primary'>{this.state.exam.startTime}</span>
+                                    </div>
+                                </div>
+                                <div className='block'>
+                                    <div>End Time</div>
+                                    <div>
+                                        <span className='view-block bg-light-primary'>{this.state.exam.endTime}</span>
                                     </div>
                                 </div>
                                 <div className='block'>

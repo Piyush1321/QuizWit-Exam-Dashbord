@@ -23,8 +23,20 @@ class Header extends React.Component {
         return (
             <>
                 <div className='navigation'>
-                    <h3>
-                        <div className='primary'>Sections</div>
+                    <h3 style={{height: "40px", borderBottom: "0.5px solid rgba(0, 0, 0, 0.4)"}} className='flex-row jc-sb pb-10'>
+                        <div>
+                            <div className='primary'>Sections</div>
+                            <div style={{fontSize: "15px"}}>
+                                <span className='gray mr-10'>Navigation</span> {this.props.sectionNavigation ? <span className='success'>On</span> : <span className='danger'>Off</span>}
+                            </div>
+                        </div>
+                        <div>
+                            {
+                                this.state.sections.map((d, k) => {
+                                    return <div className='timer' id={'sectionTimer' + d.sectionNavigationId}></div>
+                                })
+                            }
+                        </div>
                     </h3>
                     <div className='sections'>
                         <div id='entity-holder'>
@@ -34,6 +46,7 @@ class Header extends React.Component {
                                         key={k}
                                         title={d.title}
                                         sectionId={d.sectionId}
+                                        questionNavigation={d.questionNavigation}
                                         sectionNavigationId={d.sectionNavigationId}
                                         questions={d.questions}
                                         duration={d.duration}
