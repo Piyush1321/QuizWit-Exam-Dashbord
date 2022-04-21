@@ -283,10 +283,10 @@ class App extends React.Component {
           let id = 'navigationStatus' + questions[i].navigationId;
           let el = document.getElementById(id);
           let className = '';
-          if(questions[i].attempted == '1')
-            className = 'attempted-question';
-          else if(questions[i].markedAsReview == '1')
+          if(questions[i].markedAsReview == '1')
             className = 'marked-as-review-question';
+          else if(questions[i].attempted == '1')
+            className = 'attempted-question';
           el.className = className;
         }
       }
@@ -513,7 +513,22 @@ class App extends React.Component {
 
   toggleQuestionReviewStatus = (data) => {
     // let url 
-
+    let url = "http://localhost:8080/QuizWit/MarkAsReview";
+    Request.post(url, data)
+    .then((res) => {
+      console.log(res);
+      if(res.success) {
+        if(data.status) {
+          document.getElementById('mark-as-review-btn').style.display = 'none';
+          document.getElementById('remove-from-review-btn').style.display = 'block';
+        }
+        else {
+          document.getElementById('mark-as-review-btn').style.display = 'block';
+          document.getElementById('remove-from-review-btn').style.display = 'none';
+        }
+        this.highlightQuestionNavigationStatus();
+      }
+    }) 
   }
 
   componentDidMount = () => {
@@ -626,14 +641,10 @@ class App extends React.Component {
                                                 this.state.setQuestionTimer &&
                                                 <div id={'questionTimer' + this.state.currentQuestionNavigationId} className='timer ml-10'></div>
                                               }
-                                              {
-                                                !this.state.data.question.markedAsReview &&
-                                                <button className='btn btn-small btn-tertiary ml-10' onClick={this.markAsReview}>Mark as Review</button>
-                                              }    
-                                              {
-                                                this.state.data.question.markedAsReview &&
-                                                <button className='btn btn-small btn-tertiary ml-10' onClick={this.removeFromReview}>Remove from Review</button>
-                                              }        
+                                                <button id='mark-as-review-btn' className={'btn btn-small btn-tertiary ml-10 ' + (this.state.data.question.markedAsReview ? 'hidden' : '')} onClick={this.markAsReview}>Mark as Review</button>
+                                             
+                                                <button id='remove-from-review-btn' className={'btn btn-small btn-tertiary ml-10 ' + (!this.state.data.question.markedAsReview ? 'hidden' : '')} onClick={this.removeFromReview}>Remove from Review</button>
+                                                     
                                             <div style={{width: "40px"}}></div>
                                           </div>
                                         </>
