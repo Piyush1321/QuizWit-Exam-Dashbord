@@ -9,10 +9,79 @@ class Header extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            entireExamTime: this.props.duration
+            entireExamTime: this.props.duration,
+            fullScreen: false
         }
     }
 
+    exitFullScreenMode = () => {
+        if (document.exitFullscreen) {
+          document.exitFullscreen()
+          .then(() => {
+              this.setState({
+                  fullScreen: false
+              })
+          })
+          .catch((err) => {
+              Flash.message(err, 'bg-error');
+          });
+        } else if (document.webkitExitFullscreen) { /* Safari */
+          document.webkitExitFullscreen()
+          .then(() => {
+              this.setState({
+                  fullScreen: false
+              })
+          })
+          .catch((err) => {
+              Flash.message(err, 'bg-error');
+          });
+        } else if (document.msExitFullscreen) { /* IE11 */
+          document.msExitFullscreen()
+          .then(() => {
+              this.setState({
+                  fullScreen: false
+              })
+          })
+          .catch((err) => {
+              Flash.message(err, 'bg-error');
+          });
+        }
+    }
+
+    viewInFullScreen = () => {
+        let elem = document.body;
+        if (elem.requestFullscreen) {
+          elem.requestFullscreen()
+          .then(() => {
+              this.setState({
+                  fullScreen: true
+              })
+          })
+          .catch((err) => {
+              Flash.message(err, 'bg-error');
+          });
+        } else if (elem.webkitRequestFullscreen) { /* Safari */
+          elem.webkitRequestFullscreen()
+          .then(() => {
+              this.setState({
+                  fullScreen: true
+              })
+          })
+          .catch((err) => {
+              Flash.message(err, 'bg-error');
+          });
+        } else if (elem.msRequestFullscreen) { /* IE11 */
+          elem.msRequestFullscreen()
+          .then(() => {
+              this.setState({
+                  fullScreen: true
+              })
+          })
+          .catch((err) => {
+              Flash.message(err, 'bg-error');
+          });
+        }
+    }
     componentDidMount = () => {
         if(this.props.setExamTimer) {
             document.getElementById('entire-exam-timer-block').className = 'timer';
@@ -36,6 +105,14 @@ class Header extends React.Component {
                         <div className='flex-row ai-c'>
                             <div id='candidate-name' className='mr-10'>Ishwar Baisla</div>
                             <div id='entire-exam-timer-block'></div>
+                            {
+                                !this.state.fullScreen &&
+                                <button className='btn btn-small ml-10 flex-row jc-c' onClick={this.viewInFullScreen}><i className='fas fa-expand'></i></button>
+                            }
+                            {
+                                this.state.fullScreen &&
+                                <button className='btn btn-small ml-10 flex-row jc-c' onClick={this.exitFullScreenMode}><i className='fas fa-compress'></i></button>
+                            }
                             <button className='btn btn-danger btn-small ml-10' onClick={this.props.showEndExamDialog}>End Exam</button>
                         </div>
                     </div>

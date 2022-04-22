@@ -19,7 +19,6 @@ class Signin extends React.Component {
         let url = 'http://localhost:8080/QuizWit/LoginExam';
         let data = $('#signin-form').serialize();
 
-        let rememberMe = document.getElementById('remember-me');
         Request.post(url, data)
         .then((res) => {
             console.log(res)

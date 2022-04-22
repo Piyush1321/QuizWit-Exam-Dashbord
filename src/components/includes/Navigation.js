@@ -25,9 +25,9 @@ class Header extends React.Component {
                 <div className='navigation'>
                     <h3 style={{height: "40px", borderBottom: "0.5px solid rgba(0, 0, 0, 0.4)"}} className='flex-row jc-sb pb-10'>
                         <div>
-                            <div className='primary'>Sections</div>
+                            <div className='primary' style={{fontWeight: "5"}}>Sections</div>
                             <div style={{fontSize: "15px"}}>
-                                <span className='gray mr-10'>Navigation</span> {this.props.sectionNavigation ? <span className='success'>On</span> : <span className='danger'>Off</span>}
+                                <span className='gray mr-5'>Navigation</span> {this.props.sectionNavigation ? <span className='success' style={{fontWeight: "5"}}>On</span> : <span className='danger' style={{fontWeight: "5"}}>Off</span>}
                             </div>
                         </div>
                         <div>
@@ -52,6 +52,8 @@ class Header extends React.Component {
                                         duration={d.duration}
                                         submitSection={this.props.submitSection}
                                         navigateToParticularQuestion={this.props.navigateToParticularQuestion}
+                                        currentSectionId={this.props.currentSectionId}
+                                        currentQuestionNavigationId={this.props.currentQuestionNavigationId}
                                     />
                                 })
                             }

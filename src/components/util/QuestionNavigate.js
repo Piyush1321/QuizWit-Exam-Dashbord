@@ -21,7 +21,7 @@ class QuestionNavigate extends React.Component {
         return (
             <>
                 <label className='question-navigate' key={this.props.key}>
-                    <input id={'navigation' + this.props.question.navigationId} type="radio" name="questionNavigate" value={this.props.question.navigationId}/>
+                    <input id={'navigation' + this.props.question.navigationId} type="radio" name="questionNavigate" value={this.props.question.navigationId} defaultChecked={this.props.question.navigationId == this.props.currentQuestionNavigationId ? true : false}/>
                     <span  id={'navigationStatus' + this.props.question.navigationId} className={this.state.attempted + ' ' + this.state.markedAsReview}>
                         <div>
                             <div className='flex-row'>

@@ -51,7 +51,12 @@ class App extends React.Component {
           totalQuestions: 0,
           markedAsReviewQuestions: 0,
           unattemptedQuestions: 0
-        }
+        },
+        currentSectionId: 0,
+        saveAndNextBtnClicked: true,
+        saveAndPreviousBtnClicked: true,
+        submitSectionClicked: true,
+        onlySaveQuestionClicked: true
     }
   }
 
@@ -104,13 +109,31 @@ class App extends React.Component {
   }
 
   nextQuestion = () => {
-      this.state.fetchQuestionId = this.state.data.nextQuestionToFetch;
-      this.saveResponse();
+    if(this.state.saveAndNextBtnClicked) {
+      this.setState({
+        saveAndNextBtnClicked: false
+      }, () => {
+        let btn = document.getElementById('save-and-next-btn');
+        if(btn)
+          btn.innerHTML = '<i class="fas fa-sync fa-spin mr-10"></i>Saving';
+        this.state.fetchQuestionId = this.state.data.nextQuestionToFetch;
+        this.saveResponse();
+      });
+    }
   }
 
   previousQuestion = () => {
-      this.state.fetchQuestionId = this.state.data.previousQuestionToFetch;
-      this.saveResponse();
+    if(this.state.saveAndPreviousBtnClicked) {
+      this.setState({
+        saveAndPreviousBtnClicked: false
+      }, () => {
+        let btn = document.getElementById('save-and-previous-btn');
+        if(btn)
+          btn.innerHTML = '<i class="fas fa-sync fa-spin mr-10"></i>Saving';
+          this.state.fetchQuestionId = this.state.data.previousQuestionToFetch;
+          this.saveResponse();
+      });
+    }
   }
 
   sendTrueFalseResponse = () => {
@@ -173,7 +196,19 @@ class App extends React.Component {
       });
   }
 
-  saveResponse = () => {
+  onlySaveQuestion = () => {
+    if(this.state.onlySaveQuestionClicked) {
+      let btn = document.getElementById('save-question-btn');
+      btn.innerHTML = '<i class="fas fa-sync fa-spin mr-5"></i> Saving';
+      this.setState({
+        onlySaveQuestionClicked: false
+      }, () => {
+        this.saveResponse(true);
+      });
+    }
+  }
+
+  saveResponse = (save = false) => {
     let url = "http://localhost:8080/QuizWit/SaveResponse";
     let data = {};
     if(this.state.data.question.categoryId == 1 || this.state.data.question.categoryId == 2) {
@@ -182,6 +217,11 @@ class App extends React.Component {
     else if(this.state.data.question.categoryId == 3) {
       data = this.sendTrueFalseResponse();
     }
+
+    if(save) {
+      data.onlySave = true
+    }
+
     Request.post(url, data)
     .then((res) => {
       if(res.examEnd) {
@@ -238,7 +278,8 @@ class App extends React.Component {
                     setQuestionTimer: res.data.question.setQuestionTimer,
                     questionNavigation: res.data.questionNavigation,
                     sectionNavigation: res.data.sectionNavigation,
-                    currentQuestionNavigationId: res.data.question.navigationId
+                    currentQuestionNavigationId: res.data.question.navigationId,
+                    currentSectionId: res.data.question.sectionNavigationId
                   }, () => {
                     this.setState({
                       questionLoaded: true
@@ -294,7 +335,10 @@ class App extends React.Component {
   }
 
   renderQuestion = () => {
-
+    let sectionShowId = 'sectionShow' + this.state.currentSectionId;
+    let sectionHideId = 'sectionHide' + this.state.currentSectionId;
+    document.getElementById(sectionShowId).checked = true;
+    document.getElementById(sectionHideId).checked = true;
     if(this.state.questionTimer) {
       this.state.questionTimer.stop();
     }
@@ -312,6 +356,44 @@ class App extends React.Component {
       }
       this.state.questionTimer.start();
     }
+    if(!this.state.saveAndNextBtnClicked) {
+      this.setState({
+        saveAndNextBtnClicked: true
+      }, () => {
+        let saveAndNextBtn = document.getElementById('save-and-next-btn');
+        if(saveAndNextBtn)
+          saveAndNextBtn.innerHTML = "Save & Next";
+      });
+    }
+    if(!this.state.saveAndPreviousBtnClicked) {
+      this.setState({
+        saveAndPreviousBtnClicked: true
+      }, () => {
+        let saveAndPreviousBtn = document.getElementById('save-and-previous-btn');
+        if(saveAndPreviousBtn)
+        saveAndPreviousBtn.innerHTML = "Save & Next";
+      });
+    }
+
+    if(!this.state.submitSectionClicked) {
+      this.setState({
+        submitSectionClicked: true
+      }, () => {
+        let btn = document.getElementById('send-req-submit-section-btn');
+        if(btn)
+          btn.innerHTML = 'Submit';
+      });
+    }
+
+    if(!this.state.onlySaveQuestionClicked) {
+      this.setState({
+        onlySaveQuestionClicked: true
+      }, () => {
+        let btn = document.getElementById('save-question-btn');
+        if(btn)
+          btn.innerHTML = 'Save';
+      });
+    }
 
     this.checkCurrentQuestionNavigator();
     this.fetchDashboardCardData();
@@ -326,12 +408,17 @@ class App extends React.Component {
     let url = "http://localhost:8080/QuizWit/StartExam";
     Request.get(url)
     .then((res) => {
-        if(res.success) {
-          this.fetchNavigationDetails(res);
-        }
+      console.log(res);
+        if(res.endExam)
+          Flash.message('Exam has ended.', 'bg-danger');
         else {
-            btn.innerHTML = '<i className="fas fa-play mr-5"></i> Start';
-            Flash.message(res.error, 'bg-danger');
+          if(res.success) {
+            this.fetchNavigationDetails(res);
+          }
+          else {
+              btn.innerHTML = '<i className="fas fa-play mr-5"></i> Start';
+              Flash.message(res.error, 'bg-danger');
+          }
         }
     })
   }
@@ -394,21 +481,31 @@ class App extends React.Component {
   }
 
   submitSection = () => {
-    let url = "http://localhost:8080/QuizWit/SubmitSection";
-
-    let data = {
-      saveResponseQuestionNavigationId: this.state.currentQuestionNavigationId
-    };
-
-    Request.post(url, data)
-    .then((res) => {
-      if(res.endExam) {
-        this.endExam();
-      }
-      if(res.success) {
-        this.getSectionTimer();
-      }
-    });
+    if(this.state.submitSectionClicked) {
+      this.setState({
+        submitSectionClicked: false
+      }, () => {
+        let btn = document.getElementById('send-req-submit-section-btn');
+        if(btn) {
+          btn.innerHTML = '<i class="fas fa-sync fa-spin mr-5"></i> Submitting';
+          let url = "http://localhost:8080/QuizWit/SubmitSection";
+          let data = {
+            saveResponseQuestionNavigationId: this.state.currentQuestionNavigationId
+          };
+    
+          Request.post(url, data)
+          .then((res) => {
+            console.log(res);
+            if(res.endExam) {
+              this.endExam();
+            }
+            if(res.success) {
+              this.getSectionTimer();
+            }
+          });
+        }
+      });
+    }
   }
 
   checkIfURLIsValid = () => {
@@ -483,7 +580,8 @@ class App extends React.Component {
                 setQuestionTimer: response.data.question.setQuestionTimer,
                 questionNavigation: response.data.questionNavigation,
                 sectionNavigation: response.data.sectionNavigation,
-                currentQuestionNavigationId: response.data.question.navigationId
+                currentQuestionNavigationId: response.data.question.navigationId,
+                currentSectionId: response.data.question.sectionNavigationId
               }, () => {
                 this.getSectionTimer();
                 this.renderQuestion();
@@ -521,11 +619,14 @@ class App extends React.Component {
         if(data.status) {
           document.getElementById('mark-as-review-btn').style.display = 'none';
           document.getElementById('remove-from-review-btn').style.display = 'block';
+          document.getElementById('markedAsReviewQuestion').style.display = 'block';
         }
         else {
           document.getElementById('mark-as-review-btn').style.display = 'block';
           document.getElementById('remove-from-review-btn').style.display = 'none';
+          document.getElementById('markedAsReviewQuestion').style.display = 'none';
         }
+        this.fetchDashboardCardData();
         this.highlightQuestionNavigationStatus();
       }
     }) 
@@ -585,34 +686,33 @@ class App extends React.Component {
                                   sections={this.state.sections}
                                   submitSection={this.submitSection}
                                   sectionNavigation={this.state.sectionNavigation}
+                                  currentSectionId={this.state.currentSectionId}
+                                  currentQuestionNavigationId={this.state.currentQuestionNavigationId}
                                 />
                             </div>
                             <div className='content-wrapper m-10'>
                                 <div className='content-loaded' style={{height: "100%"}}>
                                     <div className='flex-row'>
                                         <div className='dashboard-card-container'>
-                                            <DashboardCard title="Total Questions" value={this.state.dashboardCardData.totalQuestions} icon="fas fa-users-cog" color="linear-gradient(45deg,rgb(91, 138, 170), rgb(63 155 218))" />
+                                            <DashboardCard title="Total Questions" value={this.state.dashboardCardData.totalQuestions} icon="fas fa-question" color="linear-gradient(45deg,rgb(91, 138, 170), rgb(63 155 218))" />
                                             <DashboardCard title="Attempted" value={this.state.dashboardCardData.attemptedQuestions} icon="fas fa-check" color="linear-gradient(45deg, rgb(102, 144, 105), rgb(88 180 95))" />
                                             <DashboardCard title="Marked as Review" value={this.state.dashboardCardData.markedAsReviewQuestions} icon="fas fa-calendar" color="linear-gradient(45deg, rgb(195, 83, 126),rgb(226 54 120))"/>
-                                            <DashboardCard title="Unattempted" value={this.state.dashboardCardData.unattemptedQuestions} icon="fas fa-users" color="linear-gradient(45deg, rgb(184, 102, 102), rgb(230 76 76))" /> 
+                                            <DashboardCard title="Unattempted" value={this.state.dashboardCardData.unattemptedQuestions} icon="fas fa-circle" color="linear-gradient(45deg, rgb(184, 102, 102), rgb(230 76 76))" /> 
                                         </div>
                                     </div>
                                     <div className='question-header'>
                                       {
-                                        this.state.data.question.attempted &&
-                                        <i className='fas fa-bookmark success'></i>
-                                      }
-                                      {
-                                        this.state.data.question.unattempted &&
-                                        <i className='fas fa-bookmark danger'></i>
-                                      }
-                                      {
-                                        this.state.data.question.markedAsReview &&
-                                        <i className='fas fa-bookmark tertiary'></i>
-                                      }
-                                      {
                                         this.state.questionLoaded &&
                                         <>
+                                        {
+                                          this.state.data.question.attempted &&
+                                          <i className='fas fa-bookmark success'></i>
+                                        }
+                                        {
+                                          this.state.data.question.unattempted &&
+                                          <i className='fas fa-bookmark danger'></i>
+                                        }
+                                        <i id='markedAsReviewQuestion' className={'fas fa-bookmark tertiary ' + (!this.state.data.question.markedAsReview ? 'hidden' : '')}></i>
                                           <div className='flex-row ai-c'>
                                             <div>
                                               <span className='mr-10'>Question {this.state.data.question.serialNo}</span>
@@ -634,6 +734,13 @@ class App extends React.Component {
                                             </div>
                                           </div>
                                           <div className='flex-row ai-c'>
+                                            {
+                                              this.state.questionNavigation && 
+                                              <>
+                                              <button id='mark-as-review-btn' className={'btn btn-small btn-tertiary mr-10 ' + (this.state.data.question.markedAsReview ? 'hidden' : '')} onClick={this.markAsReview}>Mark as Review</button>
+                                              <button id='remove-from-review-btn' className={'btn btn-small btn-tertiary mr-10 ' + (!this.state.data.question.markedAsReview ? 'hidden' : '')} onClick={this.removeFromReview}>Remove from Review</button>
+                                              </>
+                                            }
                                             <span>Score: {this.state.data.question.score}</span>
                                             <span className='gray mr-10 ml-10'>|</span>
                                             <span>Negative: {this.state.data.question.negative}</span>
@@ -641,9 +748,6 @@ class App extends React.Component {
                                                 this.state.setQuestionTimer &&
                                                 <div id={'questionTimer' + this.state.currentQuestionNavigationId} className='timer ml-10'></div>
                                               }
-                                                <button id='mark-as-review-btn' className={'btn btn-small btn-tertiary ml-10 ' + (this.state.data.question.markedAsReview ? 'hidden' : '')} onClick={this.markAsReview}>Mark as Review</button>
-                                             
-                                                <button id='remove-from-review-btn' className={'btn btn-small btn-tertiary ml-10 ' + (!this.state.data.question.markedAsReview ? 'hidden' : '')} onClick={this.removeFromReview}>Remove from Review</button>
                                                      
                                             <div style={{width: "40px"}}></div>
                                           </div>
@@ -662,30 +766,32 @@ class App extends React.Component {
                                       </div>
                                     </div>
                                     <div className='btn-container flex-row jc-sb'>
-                                      {
-                                        (this.state.questionNavigation && !this.state.data.firstQuestion) &&
-                                        <button className='btn btn-dark btn-medium' onClick={this.previousQuestion}>Save &#38; Previous</button>
-                                      }
-                                      {
-                                        (!this.state.questionNavigation || this.state.data.firstQuestion) &&
-                                        <div></div>
-                                      }
+                                      <div className='flex-row footer-left-side-btn-container'>
+                                        {
+                                          (this.state.questionNavigation && !this.state.data.firstQuestion && !this.state.data.firstQuestionOfSection) &&
+                                          <button id='save-and-previous-btn' className='btn btn-dark btn-medium' onClick={this.previousQuestion}>Save &#38; Previous</button>
+                                        }
+                                            
+                                      </div>
+                                      <div>
+                                      <button id='save-question-btn' className='btn btn-success btn-medium' onClick={this.onlySaveQuestion}>Save</button>
                                       {
                                         this.state.data.lastQuestion &&
-                                        <button className='btn btn-danger btn-medium' onClick={this.showEndExamDialog}>End Exam</button>
+                                        <button id='end-exam-btn' className='btn btn-danger btn-medium ml-10' onClick={this.showEndExamDialog}>End Exam</button>
                                       }
                                       {
-                                        this.state.data.lastQuestionOfSection && !this.state.data.lastQuestion && !this.state.sectionNavigation &&
-                                        <button className='btn btn-secondary btn-medium' onClick={this.showSubmitSectionDialog}>Save &#38; Submit Section</button>
+                                        (this.state.data.lastQuestionOfSection && !this.state.data.lastQuestion && !this.state.sectionNavigation) || (this.state.sectionNavigation && !this.state.questionNavigation && this.state.data.lastQuestionOfSection && !this.state.data.lastQuestion) &&
+                                        <button id='submit-section-btn' className='btn btn-secondary btn-medium ml-10' onClick={this.showSubmitSectionDialog}>Save &#38; Submit Section</button>
                                       }
                                       {
                                         !this.state.data.lastQuestion && !this.state.data.lastQuestionOfSection && !this.state.questionNavigation &&
-                                        <button className='btn btn-primary btn-medium' onClick={this.showSubmitQuestionDialog}>Save &#38; Next</button>
+                                        <button id='save-and-next-btn' className='btn btn-primary btn-medium ml-10' onClick={this.showSubmitQuestionDialog}>Save &#38; Next</button>
                                       }
                                       {
                                         !this.state.data.lastQuestion && !this.state.data.lastQuestionOfSection && this.state.questionNavigation &&
-                                        <button className='btn btn-primary btn-medium' onClick={this.nextQuestion}>Save &#38; Next</button>
+                                        <button id='save-and-next-btn' className='btn btn-primary btn-medium ml-10' onClick={this.nextQuestion}>Save &#38; Next</button>
                                       }
+                                      </div>
                                     </div>
                                 </div>
                               <ExamEndDialog 
@@ -698,7 +804,7 @@ class App extends React.Component {
                               <SubmitQuestionDialog 
                                 submitQuestion={this.nextQuestion}
                                 closeDialog={this.hideSubmitQuestionDialog}
-                              />
+                              /> 
                             </div>
                         </div>
                       </>
@@ -730,12 +836,8 @@ class App extends React.Component {
           !this.state.validURL &&
           <InvalidURL error={this.state.error}/>
         }
-        
         <div id='route-overlay'></div>
-        {
-          !this.state.questionLoaded && 
-          <Loader />
-        }
+        <Loader />   
       </div>
     )
   }

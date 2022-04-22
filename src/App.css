@@ -379,7 +379,7 @@ form .footer {
 }
 .fix-wrapper {
   height: 100vh;
-  background: rgba(0, 0, 0, 0.1);
+  background: #d5d5d5;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -439,10 +439,11 @@ form .footer {
   padding: 10px;
   border-top: 0.5px solid rgba(0, 0, 0, 0.3);
 }
-.loader-container {    position: absolute;
+.loader-container {    
+  position: absolute;
   left: 0;
   top: 0;
-  display: flex;
+  /* display: flex; */
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -450,6 +451,7 @@ form .footer {
   width: 100%;
   background: rgba(0, 0, 0, 0.3);
   z-index: 100;
+  display: none;
 }
 .navbar-container {
   background: white;
@@ -755,4 +757,14 @@ input::-webkit-inner-spin-button {
 
 .timer {
   display: none;
+}
+.CircularProgressbar {
+  font-size: 15px;
+  width: 60%;
+}
+.footer-left-side-btn-container button {
+  margin-left: 10px;
+}
+.footer-left-side-btn-container button:nth-child(1), .footer-left-side-btn-container button:nth-child(2) {
+  margin-left: 0;
 }

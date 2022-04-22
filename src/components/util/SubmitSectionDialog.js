@@ -6,6 +6,7 @@ class SubmitSectionDialog extends React.Component {
         super(props);
     }
 
+
     render = () => {
         return (
             <>
@@ -21,7 +22,7 @@ class SubmitSectionDialog extends React.Component {
                         </div>
                         <div className='btn-container flex-row jc-sb'>
                             <button className='btn btn-fade btn-small' onClick={this.props.closeDialog}>Cancel</button>
-                            <button className='btn btn-danger btn-small' onClick={this.props.submitSection}>Submit</button>
+                            <button id='send-req-submit-section-btn' className='btn btn-danger btn-small' onClick={this.props.submitSection}>Submit</button>
                         </div>
                     </div>
                 </div>
