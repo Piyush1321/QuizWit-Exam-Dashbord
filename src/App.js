@@ -780,7 +780,7 @@ class App extends React.Component {
                                         <button id='end-exam-btn' className='btn btn-danger btn-medium ml-10' onClick={this.showEndExamDialog}>End Exam</button>
                                       }
                                       {
-                                        (this.state.data.lastQuestionOfSection && !this.state.data.lastQuestion && !this.state.sectionNavigation) || (this.state.sectionNavigation && !this.state.questionNavigation && this.state.data.lastQuestionOfSection && !this.state.data.lastQuestion) &&
+                                        (this.state.data.lastQuestionOfSection && !this.state.data.lastQuestion && !this.state.sectionNavigation) || (!this.state.sectionNavigation && !this.state.questionNavigation && this.state.data.lastQuestionOfSection && !this.state.data.lastQuestion) &&
                                         <button id='submit-section-btn' className='btn btn-secondary btn-medium ml-10' onClick={this.showSubmitSectionDialog}>Save &#38; Submit Section</button>
                                       }
                                       {
