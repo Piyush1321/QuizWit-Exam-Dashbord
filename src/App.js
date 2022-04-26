@@ -56,7 +56,8 @@ class App extends React.Component {
         saveAndNextBtnClicked: true,
         saveAndPreviousBtnClicked: true,
         submitSectionClicked: true,
-        onlySaveQuestionClicked: true
+        onlySaveQuestionClicked: true,
+        sectionSubmitted: false
     }
   }
 
@@ -416,7 +417,7 @@ class App extends React.Component {
             this.fetchNavigationDetails(res);
           }
           else {
-              btn.innerHTML = '<i className="fas fa-play mr-5"></i> Start';
+              btn.innerHTML = '<i class="fas fa-play mr-5"></i> Start';
               Flash.message(res.error, 'bg-danger');
           }
         }
@@ -473,7 +474,9 @@ class App extends React.Component {
               this.state.sectionTimer.set(res.timeDuration, timerId, this.submitSection);
               this.state.sectionTimer.start();
             }
-            this.saveResponse();
+            if(this.state.sectionSubmitted) {
+              this.saveResponse();
+            }
           });
         }
       }
@@ -483,7 +486,8 @@ class App extends React.Component {
   submitSection = () => {
     if(this.state.submitSectionClicked) {
       this.setState({
-        submitSectionClicked: false
+        submitSectionClicked: false,
+        sectionSubmitted: true
       }, () => {
         let btn = document.getElementById('send-req-submit-section-btn');
         if(btn) {
@@ -780,7 +784,7 @@ class App extends React.Component {
                                         <button id='end-exam-btn' className='btn btn-danger btn-medium ml-10' onClick={this.showEndExamDialog}>End Exam</button>
                                       }
                                       {
-                                        (this.state.data.lastQuestionOfSection && !this.state.data.lastQuestion && !this.state.sectionNavigation) || (!this.state.sectionNavigation && !this.state.questionNavigation && this.state.data.lastQuestionOfSection && !this.state.data.lastQuestion) &&
+                                        this.state.data.lastQuestionOfSection && !this.state.data.lastQuestion && !this.state.sectionNavigation &&
                                         <button id='submit-section-btn' className='btn btn-secondary btn-medium ml-10' onClick={this.showSubmitSectionDialog}>Save &#38; Submit Section</button>
                                       }
                                       {

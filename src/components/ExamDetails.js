@@ -86,7 +86,7 @@ class ExamDetails extends React.Component {
     }
 
     startExam = () => {
-        if(!this.state.exam.endExam)
+        if(!this.state.exam.endExam && this.state.exam.giveAttempt)
             document.getElementById('start-exam-btn').style.display = 'block';
     }
 
